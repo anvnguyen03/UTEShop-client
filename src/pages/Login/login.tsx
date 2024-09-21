@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
 
         if (res) {
             if(res.data) {
-                localStorage.setItem('accessToken', res.data.accessToken);
+                localStorage.setItem('access_token', res.data.accessToken);
                 dispatch(setUserLoginInfo(res.data.user))
                 console.log(res);
                 console.log(`Authen: ${isAuthenticated}`);
