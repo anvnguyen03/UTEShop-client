@@ -12,17 +12,7 @@ export interface IAccount {
         email: string;
         fullName: string;
         address: string;
-        role: {
-            id?: string;
-            name?: string;
-            permissions?: {
-                id: string;
-                name: string;
-                apiPath: string;
-                method: string;
-                module: string;
-            }[]
-        }
+        role: string;
     }
 }
 
@@ -31,16 +21,6 @@ export interface IGetAccount {
         email: string;
         fullName: string;
         address: string;
-        role: {
-            id?: string;
-            name?: string;
-            permissions?: {
-                id: string;
-                name: string;
-                apiPath: string;
-                method: string;
-                module: string;
-            }[]
-        }
+        role: string;
     }
 }
