@@ -8,3 +8,7 @@ export const callLogin = (email: string, password: string) => {
 export const callFetchAccount = () => {
     return axios.get<IBackendRes<IGetAccount>>('/api/v1/auth/account')
 }
+
+export const callRegister = (fullName: string, email: string, password: string) => {
+    return axios.post('/api/v1/auth/register', { fullName, email, password })
+}

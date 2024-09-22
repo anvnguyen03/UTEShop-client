@@ -1,16 +1,17 @@
-import { Component, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import { Button } from 'primereact/button'
 import LoginPage from './pages/Login/login'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import RegisterPage from './pages/Register/register'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <LoginPage/>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/login' element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/" element={<LoginPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
