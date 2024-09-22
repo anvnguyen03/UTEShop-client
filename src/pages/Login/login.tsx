@@ -30,6 +30,9 @@ const LoginPage: React.FC = () => {
     // let params = new URLSearchParams(location.search);
     // const callback = params?.get("callback");
 
+    const navigate = useNavigate();
+
+
     useEffect(() => {
         //đã login => redirect to '/'
         console.log(isAuthenticated);
@@ -59,7 +62,7 @@ const LoginPage: React.FC = () => {
         setEmailError(!isValidEmail);
         return isValidEmail;
     };
-    
+
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -68,7 +71,7 @@ const LoginPage: React.FC = () => {
         setSubmitted(false);
 
         if (res) {
-            if(res.data) {
+            if (res.data) {
                 localStorage.setItem('access_token', res.data.accessToken);
                 dispatch(setUserLoginInfo(res.data.user))
                 console.log(res);
@@ -76,7 +79,7 @@ const LoginPage: React.FC = () => {
                 // message.success('Đăng nhập tài khoản thành công!');
                 // window.location.href = callback ? callback : '/';
             }
-            
+
         } else {
             // notification.error({
             //     message: "Có lỗi xảy ra",
@@ -92,24 +95,29 @@ const LoginPage: React.FC = () => {
         setTouchedFields(prev => ({ ...prev, [field]: true }));
     }
 
+    // forgot password
+    const handleForgotPassword = () => {
+        navigate('/forgot-password');  // Điều hướng đến route forgot-password
+    }
+
     return (
         <div className="px-5 min-h-screen flex justify-content-center align-items-center">
             <form onSubmit={handleSubmit} className="border-1 surface-border surface-card border-round py-7 px-4 md:px-7 z-1">
-            <div className="text-center mb-5">
-                <img src={appLogo} alt="ute-shop" height={50} className="mb-3" />
-                <div className="text-900 text-3xl font-medium mb-3">Chào mừng quý khách</div>
-                <span className="text-600 font-medium line-height-3">Bạn chưa có tài khoản ?</span>
-                <a className="font-medium no-underline ml-2 text-blue-500 cursor-pointer">Tạo ngay!</a>
-            </div>
+                <div className="text-center mb-5">
+                    <img src={appLogo} alt="ute-shop" height={50} className="mb-3" />
+                    <div className="text-900 text-3xl font-medium mb-3">Chào mừng quý khách</div>
+                    <span className="text-600 font-medium line-height-3">Bạn chưa có tài khoản ?</span>
+                    <a className="font-medium no-underline ml-2 text-blue-500 cursor-pointer">Tạo ngay!</a>
+                </div>
                 {/* Email field */}
                 <FloatLabel className="field">
-                    <InputText style={{width: '278px'}} 
-                        id="username" 
-                        name="username" 
-                        value={form.username} 
+                    <InputText style={{ width: '278px' }}
+                        id="username"
+                        name="username"
+                        value={form.username}
                         onChange={handleInputChange}
                         onFocus={() => handleFieldFocus('email')}
-                        // onBlur={() => handleFieldFocus('email')}
+                    // onBlur={() => handleFieldFocus('email')}
                     />
                     <label htmlFor="username">Email</label>
                 </FloatLabel>
@@ -118,34 +126,39 @@ const LoginPage: React.FC = () => {
 
                 {/* Password field */}
                 <FloatLabel className="field">
-                    <Password inputId="password" 
-                        id="password" 
+                    <Password inputId="password"
+                        id="password"
                         name="password"
                         value={form.password}
-                        onChange={handleInputChange} 
+                        onChange={handleInputChange}
                         onFocus={() => handleFieldFocus('password')}
                         // onBlur={() => handleFieldFocus('password')}
                         feedback={false}
-                        toggleMask 
+                        toggleMask
                     />
                     <label htmlFor="password">Mật khẩu</label>
                 </FloatLabel>
                 {!form.password && touchedFields.password && <small className="p-error field">Mật khẩu không được để trống</small>}
+
+                {/* Forgot Password */}
                 <div className="flex align-items-center justify-content-between field">
-                    <a className="font-medium no-underline text-blue-500 text-right cursor-pointer">Bạn quên mật khẩu à?</a>
+                    <a className="font-medium no-underline text-blue-500 text-right cursor-pointer"
+                        onClick={handleForgotPassword}>
+                            Bạn quên mật khẩu à?
+                    </a>
                 </div>
                 <div>
                     {
                         isValidForm ? (
                             <Button label="Đăng nhập" icon="pi pi-sign-in" type="submit" className="field"/>
                         ) : (<Button label="Đăng nhập" icon="pi pi-sign-in" type="submit" className="field" disabled/>)
-                        
+
                     }
                 </div>
-                
+
             </form>
         </div>
-        
+
     )
 }
 export default LoginPage;

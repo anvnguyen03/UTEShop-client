@@ -1,0 +1,22 @@
+/* forgotpassword.css */
+.forgot-password-container {
+    width: 300px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.forgot-password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.p-error {
+    color: red;
+    font-size: 0.875rem;
+}

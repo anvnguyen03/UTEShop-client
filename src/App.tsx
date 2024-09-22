@@ -1,17 +1,21 @@
-import { Component, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import { Button } from 'primereact/button'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/Login/login'
+import ForgotPassword from './pages/ResetPassword/sentotp';
+import VerifyOTP from './pages/ResetPassword/verifyotp';
+import ResetPassword from './pages/ResetPassword/resetpassword';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <LoginPage/>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={<VerifyOTP />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App
