@@ -25,18 +25,16 @@ const LoginPage: React.FC = () => {
     const [isValidForm, setValidForm] = useState(false);
     const dispatch = useDispatch();
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
-
     // let location = useLocation();
     // let params = new URLSearchParams(location.search);
     // const callback = params?.get("callback");
 
     useEffect(() => {
         //đã login => redirect to '/'
-        console.log(isAuthenticated);
         if (isAuthenticated) {
             // navigate('/');
             console.log("Authenticated");
-            window.location.href = 'check';
+            // window.location.href = 'check';
         }
     }, [isAuthenticated])
 
@@ -72,7 +70,6 @@ const LoginPage: React.FC = () => {
                 localStorage.setItem('access_token', res.data.accessToken);
                 dispatch(setUserLoginInfo(res.data.user))
                 console.log(res);
-                console.log(`Authen: ${isAuthenticated}`);
                 // message.success('Đăng nhập tài khoản thành công!');
                 // window.location.href = callback ? callback : '/';
             }

@@ -6,8 +6,8 @@ import { act } from 'react';
 export const fetchAccount = createAsyncThunk(
     'account/fetchAccount',
     async () => {
-        const response = await callFetchAccount();
-        return response.data.data;
+        const response: any = await callFetchAccount();
+        return response.data;
     }
 )
 
@@ -86,9 +86,9 @@ export const accountSlide = createSlice({
             if (action.payload) {
                 state.isAuthenticated = true;
                 state.isLoading = false;
-                state.user.email = action.payload.user?.email;
-                state.user.fullName = action.payload.user?.fullName;
-                state.user.role = action.payload.user.role;
+                state.user.email = action.payload.email;
+                state.user.fullName = action.payload.fullName;
+                state.user.role = action.payload.role;
             }
         })
 

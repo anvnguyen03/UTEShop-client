@@ -17,10 +17,8 @@ export interface IAccount {
 }
 
 export interface IGetAccount {
-    user: {
-        email: string;
-        fullName: string;
-        address: string;
-        role: string;
-    }
+    email: string;
+    fullName: string;
+    address: string;
+    role: string;
 }

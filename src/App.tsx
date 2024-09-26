@@ -1,11 +1,21 @@
-import { Component, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import { Button } from 'primereact/button'
+import { useEffect } from 'react'
 import LoginPage from './pages/Login/login'
+import { useAppDispatch, useAppSelector } from './redux/hooks'
+import { fetchAccount } from './redux/slice/accountSlide';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const dispatch = useAppDispatch();
+  const isLoading = useAppSelector(state => state.account.isLoading);
+
+  useEffect(() => {
+    if (
+      window.location.pathname === '/login'
+      || window.location.pathname === '/register'
+    ) {
+      return;
+    }    
+    dispatch(fetchAccount())
+  }, [])
 
   return (
     <>
