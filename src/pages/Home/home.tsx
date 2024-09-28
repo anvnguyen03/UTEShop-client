@@ -67,7 +67,6 @@ const ArrivalsSection = (
 );
 
 const HomePage: React.FC = () => {
-    const email = useAppSelector(state => state.account.user.email);
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
     console.log(isAuthenticated);
     return (
