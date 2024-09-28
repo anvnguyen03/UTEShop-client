@@ -1,18 +1,32 @@
-import { Component, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import { Button } from 'primereact/button'
+import { useEffect } from 'react'
+import LoginPage from './pages/Login/login'
+import { useAppDispatch, useAppSelector } from './redux/hooks'
+import { fetchAccount } from './redux/slice/accountSlide';
+import HomePage from './pages/Home/home';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const dispatch = useAppDispatch();
+  const isLoading = useAppSelector(state => state.account.isLoading);
+
+  useEffect(() => {
+    // if (
+    //   window.location.pathname === '/login'
+    //   || window.location.pathname === '/register'
+    // ) {
+    //   return;
+    // }    
+    dispatch(fetchAccount())
+  }, [])
 
   return (
-    <>
-      <h1>Hello</h1>
-      <div className='card flex justify-content-center'>
-        <Button label='Submit'/>
-      </div>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Navigate to='/home' />}/>
+        <Route path='/home' element={<HomePage/>} />
+        <Route path='/login' element={<LoginPage/>} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

@@ -1,0 +1,106 @@
+.wrapper {
+    background-image: url("https://hcmutenoithat.site/assets/static/images/hero-slider/hero-slider-1.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+}
+
+.title {
+    margin-left: 25%;
+}
+
+.p-menubar {
+    background: white;
+    border: none;
+    border-radius: 0%;
+}
+
+.service-promo .image {
+    width: 77px;
+    height: 77px;
+    overflow: hidden;
+    margin: 0 auto
+}
+
+.service-promo .image img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 27px
+}
+
+.service-promo .content .title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.service-promo .content p {
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+}
+
+.banner {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.banner img {
+    width: 770px;
+    height: auto;
+}
+
+.banner-animation {
+    position: relative
+}
+
+.banner-animation::before {
+    background: rgba(255, 255, 255, .3);
+    bottom: 0;
+    content: "";
+    left: 50%;
+    position: absolute;
+    right: 50%;
+    top: 0;
+    opacity: 1;
+    width: 0
+}
+
+.banner-animation::after {
+    background: rgba(255, 255, 255, .6);
+    bottom: 50%;
+    content: "";
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    opacity: 1;
+    width: 0
+}
+
+.banner-animation:hover::before {
+    left: 0;
+    right: 0;
+    opacity: 0;
+    width: auto;
+    transition: all .9s linear
+}
+
+.banner-animation:hover::after {
+    top: 0;
+    bottom: 0;
+    opacity: 0;
+    width: auto;
+    transition: all .9s linear
+}
+
+.little-title {
+    font-size: medium;
+    font-weight: 200;
+}
