@@ -31,10 +31,13 @@ const LoginPage: React.FC = () => {
 
     useEffect(() => {
         //đã login => redirect to '/'
+        // if(localStorage.getItem("access_token")) {
+        //     window.location.href = '/';
+        // }
         if (isAuthenticated) {
             // navigate('/');
             console.log("Authenticated");
-            // window.location.href = 'check';
+            window.location.href = '/';
         }
     }, [isAuthenticated])
 
