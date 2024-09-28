@@ -6,8 +6,8 @@ import { act } from 'react';
 export const fetchAccount = createAsyncThunk(
     'account/fetchAccount',
     async () => {
-        const response = await callFetchAccount();
-        return response.data.data;
+        const response: any = await callFetchAccount();
+        return response.data;
     }
 )
 
@@ -20,17 +20,7 @@ interface IState {
         email: string;
         fullName: string;
         address: string;
-        role: {
-            id?: string;
-            name?: string;
-            permissions?: {
-                id: string;
-                name: string;
-                apiPath: string;
-                method: string;
-                module: string;
-            }[]
-        }
+        role: string;
     };
     activeMenu: string;
 }
@@ -44,13 +34,8 @@ const initialState: IState = {
         email: "",
         fullName: "",
         address: "",
-        role: {
-            id: "",
-            name: "",
-            permissions: [],
-        },
+        role: "customer",
     },
-
     activeMenu: 'home'
 };
 
@@ -69,10 +54,8 @@ export const accountSlide = createSlice({
             state.isLoading = false;
             state.user.email = action.payload.email;
             state.user.fullName = action.payload.fullName;
-            state.user.role = action?.payload?.role;
+            state.user.role = action.payload.role;
 
-            if (!action?.payload?.user?.role) state.user.role = {};
-            state.user.role.permissions = action?.payload?.role?.permissions ?? [];
         },
         setLogoutAction: (state, action) => {
             localStorage.removeItem('access_token');
@@ -81,11 +64,7 @@ export const accountSlide = createSlice({
                 email: "",
                 fullName: "",
                 address: "",
-                role: {
-                    id: "",
-                    name: "",
-                    permissions: [],
-                },
+                role: "customer",
             }
         },
         setRefreshTokenAction: (state, action) => {
@@ -107,11 +86,9 @@ export const accountSlide = createSlice({
             if (action.payload) {
                 state.isAuthenticated = true;
                 state.isLoading = false;
-                state.user.email = action.payload.user?.email;
-                state.user.fullName = action.payload.user?.fullName;
-                state.user.role = action?.payload?.user?.role;
-                if (!action?.payload?.user?.role) state.user.role = {};
-                state.user.role.permissions = action?.payload?.user?.role?.permissions ?? [];
+                state.user.email = action.payload.email;
+                state.user.fullName = action.payload.fullName;
+                state.user.role = action.payload.role;
             }
         })
 

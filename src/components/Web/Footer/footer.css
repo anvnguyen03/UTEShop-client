@@ -1,0 +1,46 @@
+.footer-bg {
+    background-color: #24262b;
+}
+
+.footer-section {
+    color: white;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+li {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 25px;
+}
+
+.footer-section .title {
+    color: #fff;
+    position: relative;
+    text-transform: uppercase;
+    margin-left: 0;
+    padding-bottom: 20px;
+}
+
+.footer-section .title::after {
+    content: "";
+    width: 50px;
+    height: 2px;
+    left: 0;
+    bottom: 0;
+    position: absolute;
+    background: #b19361;
+}
+
+.footer-about {
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 25px;
+}
