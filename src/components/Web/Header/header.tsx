@@ -16,6 +16,7 @@ const Header: React.FC = () => {
         {
             label: 'Shop',
             icon: 'pi pi-shop',
+            url: '/shop',
             items: [
                 {
                     label: 'Components',
