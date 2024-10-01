@@ -4,10 +4,18 @@ import appLogo from '../../../assets/logo_red.png';
 import { InputText } from 'primereact/inputtext';
 import { useAppSelector } from '../../../redux/hooks';
 import { Button } from 'primereact/button';
+import { useContext } from 'react';
+import { SearchContext } from '../../../pages/shop/search'
 import AvatarHeader from './avatar';
 
 const Header: React.FC = () => {
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
+
+    const { setSearchTerm } = useContext(SearchContext);
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value); 
+    };
+
     const items: MenuItem[] = [
         {
             label: 'Home',
@@ -66,9 +74,9 @@ const Header: React.FC = () => {
     const avt = <AvatarHeader/>
     const end = (
         <div className="flex align-items-center gap-2">
-            <InputText placeholder="Search" type="text" className="w-8rem sm:w-auto" />
+            <InputText placeholder="Search" type="text" className="w-8rem sm:w-auto" onChange={handleSearchChange} />
             {
-                isAuthenticated ? (avt): <Button label='Đăng nhập' icon="pi pi-sign-in" onClick={loginClick}/>
+                isAuthenticated ? avt : <Button label='Đăng nhập' icon="pi pi-sign-in" onClick={loginClick} />
             }
         </div>
     );

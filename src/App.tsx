@@ -7,6 +7,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import RegisterPage from './pages/Register/register'
 import ShopPage from './pages/shop/shop';
 import ViewProductPage from './pages/product/product';
+import { SearchProvider } from './pages/shop/search';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -24,14 +25,16 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Navigate to='/home' />}/>
-        <Route path='/home' element={<HomePage/>} />
-        <Route path='/login' element={<LoginPage/>} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path='/shop' element={<ShopPage />} />
-        <Route path='/product' element={<ViewProductPage />} />
-      </Routes>
+      <SearchProvider>
+        <Routes>
+          <Route path='/' element={<Navigate to='/home' />} />
+          <Route path='/home' element={<HomePage />} />
+          <Route path='/login' element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path='/shop' element={<ShopPage />} />
+          <Route path='/product' element={<ViewProductPage />} />
+        </Routes>
+      </SearchProvider>
     </BrowserRouter>
   )
 }
