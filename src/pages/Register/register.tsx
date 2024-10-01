@@ -36,7 +36,7 @@ const RegisterPage: React.FC = () => {
         <div className="px-5 min-h-screen flex justify-content-center align-items-center">
             <form onSubmit={handleSubmit(onSubmit)} className="border-1 surface-border surface-card border-round py-7 px-4 md:px-7 z-1">
                 <div className="text-center mb-5">
-                    <img src={appLogo} alt="ute-shop" height={50} className="mb-3" />
+                    <Link to={"/home"}><img src={appLogo} alt="ute-shop" height={50} className="mb-3" /></Link>
                     <div className="text-900 text-3xl font-medium mb-3">
                         Hãy bắt đầu
                         <br />

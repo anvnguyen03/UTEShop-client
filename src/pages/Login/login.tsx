@@ -104,7 +104,7 @@ const LoginPage: React.FC = () => {
         <div className="px-5 min-h-screen flex justify-content-center align-items-center">
             <form onSubmit={handleSubmit} className="border-1 surface-border surface-card border-round py-7 px-4 md:px-7 z-1">
             <div className="text-center mb-5">
-                <img src={appLogo} alt="ute-shop" height={50} className="mb-3" />
+                <Link to={"/home"}><img src={appLogo} alt="ute-shop" height={50} className="mb-3" /></Link>
                 <div className="text-900 text-3xl font-medium mb-3">Chào mừng quý khách</div>
                 <span className="text-600 font-medium line-height-3">Bạn chưa có tài khoản ?</span>
                 <Link to="/register" className="font-medium no-underline ml-2 text-blue-500 cursor-pointer">Tạo ngay!</Link>

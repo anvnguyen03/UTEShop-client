@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Button } from 'primereact/button';
 import { DataView } from 'primereact/dataview';
 import { Rating } from 'primereact/rating';
@@ -8,6 +7,7 @@ import { classNames } from 'primereact/utils';
 import { ProductService } from './productService';
 import { Dropdown } from 'primereact/dropdown';
 import WebLayout from '../../components/Layout/WebLayout';
+import { SearchContext } from './search';
 
 interface Product {
     id: string;
@@ -27,6 +27,7 @@ export default function PaginationDemo() {
     const [sortKey, setSortKey] = useState('');
     const [sortOrder, setSortOrder] = useState(0);
     const [sortField, setSortField] = useState('');
+    const { searchTerm } = useContext(SearchContext);
     const sortOptions = [
         { label: 'Price High to Low', value: '!price' },
         { label: 'Price Low to High', value: 'price' }
@@ -35,6 +36,10 @@ export default function PaginationDemo() {
     useEffect(() => {
         ProductService.getProducts().then((data) => setProducts(data));
     }, []);
+
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const getSeverity = (product: Product) => {
         switch (product.inventoryStatus) {
@@ -52,7 +57,7 @@ export default function PaginationDemo() {
         }
     };
 
-    const onSortChange = (event) => {
+    const onSortChange = (event:any) => {
         const value = event.value;
 
         if (value.indexOf('!') === 0) {
@@ -97,7 +102,7 @@ export default function PaginationDemo() {
         );
     };
 
-    const listTemplate = (items: Product) => {
+    const listTemplate = (items: Product[]) => {
         if (!items || items.length === 0) return null;
 
         let list = items.map((product, index) => {
@@ -109,12 +114,21 @@ export default function PaginationDemo() {
 
     return (
         <WebLayout>
-            <br/>
-            <br/>
-            <br/>
+            <br />
+            <br />
+            <br />
             <div className="card">
-                <DataView value={products} listTemplate={listTemplate} paginator rows={5} header={header()} sortField={sortField} sortOrder={sortOrder} />
+                <DataView
+                    value={filteredProducts} // Hiển thị sản phẩm đã được lọc
+                    listTemplate={listTemplate}
+                    paginator
+                    rows={5}
+                    header={header()}
+                    sortField={sortField}
+                    sortOrder={sortOrder === 1 || sortOrder === -1 ? sortOrder : null}
+                />
             </div>
         </WebLayout>
-    )
+    );
+    
 }

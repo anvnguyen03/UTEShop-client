@@ -4,10 +4,19 @@ import appLogo from '../../../assets/logo_red.png';
 import { InputText } from 'primereact/inputtext';
 import { useAppSelector } from '../../../redux/hooks';
 import { Button } from 'primereact/button';
+import { useContext } from 'react';
+import { SearchContext } from '../../../pages/shop/search'
 import AvatarHeader from './avatar';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
+
+    const { setSearchTerm } = useContext(SearchContext);
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value); 
+    };
+
     const items: MenuItem[] = [
         {
             label: 'Home',
@@ -62,13 +71,17 @@ const Header: React.FC = () => {
     const loginClick = () => {
         window.location.href = '/login';
     }
-    const start = <img alt="logo" src={appLogo} height="40" className="mr-2"></img>;
+    const start = () => {
+        return (
+            <Link to={"/home"}><img alt="logo" src={appLogo} height="40" className="mr-2" /></Link>
+        )
+    }
     const avt = <AvatarHeader/>
     const end = (
         <div className="flex align-items-center gap-2">
-            <InputText placeholder="Search" type="text" className="w-8rem sm:w-auto" />
+            <InputText placeholder="Search" type="text" className="w-8rem sm:w-auto" onChange={handleSearchChange} />
             {
-                isAuthenticated ? (avt): <Button label='Đăng nhập' icon="pi pi-sign-in" onClick={loginClick}/>
+                isAuthenticated ? avt : <Button label='Đăng nhập' icon="pi pi-sign-in" onClick={loginClick} />
             }
         </div>
     );
