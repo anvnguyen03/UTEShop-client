@@ -7,6 +7,9 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import RegisterPage from './pages/Register/register'
 import ShopPage from './pages/shop/shop';
 import ViewProductPage from './pages/product/product';
+import ForgotPassword from './pages/ResetPassword/sentotp';
+import VerifyOTP from './pages/ResetPassword/verifyotp';
+import ResetPassword from './pages/ResetPassword/resetpassword';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -31,6 +34,9 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path='/shop' element={<ShopPage />} />
         <Route path='/product' element={<ViewProductPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={<VerifyOTP />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   )
