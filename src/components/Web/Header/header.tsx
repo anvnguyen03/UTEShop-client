@@ -5,7 +5,7 @@ import { InputText } from 'primereact/inputtext';
 import { useAppSelector } from '../../../redux/hooks';
 import { Button } from 'primereact/button';
 import { useContext } from 'react';
-import { SearchContext } from '../../../pages/shop/search'
+import { SearchContext } from '../../../pages/Shop/search'
 import AvatarHeader from './avatar';
 import { Link } from 'react-router-dom';
 
@@ -20,7 +20,8 @@ const Header: React.FC = () => {
     const items: MenuItem[] = [
         {
             label: 'Home',
-            icon: 'pi pi-home'
+            icon: 'pi pi-home',
+            url: '/home'
         },
         {
             label: 'Shop',
@@ -56,16 +57,13 @@ const Header: React.FC = () => {
             ]
         },
         {
+            label: 'Cart',
+            icon: 'pi pi-shopping-cart',
+            url: '/cart'
+        },
+        {
             label: 'Contact',
             icon: 'pi pi-envelope'
-        },
-        {
-            label: 'Wish list',
-            icon: 'pi pi-heart'
-        },
-        {
-            label: 'Cart',
-            icon: 'pi pi-shopping-cart'
         }
     ];
     const loginClick = () => {

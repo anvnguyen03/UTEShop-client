@@ -10,10 +10,17 @@ import 'primeicons/primeicons.css';                       // PrimeIcons
 import 'primeflex/primeflex.css';                         // PrimeFlex
 import './index.css'
 
+const value = {
+  ripple: true,
+
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
-      <App />
+      <PrimeReactProvider value={value}>
+        <App />
+      </PrimeReactProvider>
     </Provider>
   </StrictMode>,
 )

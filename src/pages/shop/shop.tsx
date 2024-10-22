@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Button } from 'primereact/button';
 import { DataView, DataViewLayoutOptions } from 'primereact/dataview';
 import { Rating } from 'primereact/rating';
@@ -8,6 +8,7 @@ import { classNames } from 'primereact/utils';
 import { ProductService } from './productService';
 import { Dropdown } from 'primereact/dropdown';
 import WebLayout from '../../components/Layout/WebLayout';
+import { SearchContext } from './search';
 
 interface Product {
     id: string;
@@ -22,12 +23,13 @@ interface Product {
     rating: number;
 }
 
-export default function BasicDemo() {
+export default function ShopPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [layout, setLayout] = useState('grid');
     const [sortKey, setSortKey] = useState('');
     const [sortOrder, setSortOrder] = useState(0);
     const [sortField, setSortField] = useState('');
+    const { searchTerm } = useContext(SearchContext);
     const sortOptions = [
         { label: 'Price High to Low', value: '!price' },
         { label: 'Price Low to High', value: 'price' }
@@ -36,6 +38,10 @@ export default function BasicDemo() {
     useEffect(() => {
         ProductService.getProducts().then((data) => setProducts(data.slice(0, 12)));
     }, []);
+
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const getSeverity = (product: Product) => {
         switch (product.inventoryStatus) {
@@ -71,7 +77,7 @@ export default function BasicDemo() {
         return (
             <div className="col-12" key={product.id}>
                 <div className={classNames('flex flex-column xl:flex-row xl:align-items-start p-4 gap-4', { 'border-top-1 surface-border': index !== 0 })}>
-                    <img className="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round" src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`} alt={product.name} />
+                <a href={`/product?id=${product.id}`}><img className="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round" src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`} alt={product.name} /></a>
                     <div className="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
                         <div className="flex flex-column align-items-center sm:align-items-start gap-3">
                             <div className="text-2xl font-bold text-900">{product.name}</div>
@@ -106,7 +112,7 @@ export default function BasicDemo() {
                         <Tag value={product.inventoryStatus} severity={getSeverity(product)}></Tag>
                     </div>
                     <div className="flex flex-column align-items-center gap-3 py-5">
-                        <img className="w-9 shadow-2 border-round" src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`} alt={product.name} />
+                        <a href={`/product?id=${product.id}`}><img className="w-12 shadow-2 border-round" src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`} alt={product.name} /></a>
                         <div className="text-2xl font-bold">{product.name}</div>
                         <Rating value={product.rating} readOnly cancel={false}></Rating>
                     </div>
@@ -128,10 +134,6 @@ export default function BasicDemo() {
         else if (layout === 'grid') return gridItem(product);
     };
 
-    const listTemplate = (products: Product[], layout: string) => {
-        return <div className="grid grid-nogutter">{products.map((product, index) => itemTemplate(product, layout, index))}</div>;
-    };
-
     const header = () => {
         return (
             <>
@@ -149,9 +151,15 @@ export default function BasicDemo() {
     return (
         <WebLayout>
             <div className="card">
-                <DataView value={products} itemTemplate={itemTemplate} layout={layout} header={header()} sortField={sortField}
-                        sortOrder={sortOrder === 1 || sortOrder === -1 ? sortOrder : null} paginator
-                        rows={6} />
+                <DataView 
+                    value={filteredProducts} 
+                    itemTemplate={itemTemplate} 
+                    layout={layout} 
+                    header={header()} 
+                    sortField={sortField}
+                    sortOrder={sortOrder === 1 || sortOrder === -1 ? sortOrder : null} 
+                    paginator
+                    rows={6} />
             </div>
         </WebLayout>
     )
