@@ -11,24 +11,26 @@ import { CartItem } from '../Cart/cart'
 const mockCartItems: CartItem[] = [
     {
         id: 101,
-        image: 'https://www.primefaces.org/cdn/primereact/images/product/headphones.jpg',
-        name: 'Excellent',
+        image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-1.png',
+        name: 'White long-hand shirt',
+        color: 'Blue',
         size: 'Medium',
-        price: 20.0,
         quantity: 1,
-        available: 8,
-        deliveryDate: 'Dec 23',
+        available: 100,
+        price: 12.0,
+        deliveryDate: 'Dec 23'
     },
     {
         id: 102,
-        image: 'https://www.primefaces.org/cdn/primereact/images/product/light-green-t-shirt.jpg',
-        name: 'Holly Water',
-        size: 'Medium',
-        price: 62.0,
+        image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-2.png',
+        name: 'Jackie Chan',
+        color: 'Yellow',
+        size: 'Large',
         quantity: 1,
-        available: 2,
-        deliveryDate: 'Dec 23',
-    },
+        available: 87,
+        price: 24.0,
+        deliveryDate: 'Dec 23'
+    }
 ]
 
 const CheckoutForm: React.FC = () => {
@@ -37,7 +39,7 @@ const CheckoutForm: React.FC = () => {
     const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems)
 
     const handlePlaceOrder = () => {
-        console.log('Order Placed!');
+        navigate('/ordersummary')
     }
 
     const price = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
@@ -156,7 +158,7 @@ const CheckoutForm: React.FC = () => {
                                                 <span className="text-900 font-medium">{item.name}</span>
                                                 <span className="text-900 font-medium">${item.price}</span>
                                             </div>
-                                            <div className="text-600 text-sm mb-3">{item.size}</div>
+                                            <div className="text-600 text-sm mb-3">{item.size} | {item.color}</div>
                                             <div className="text-600 text-sm mb-3">x{item.quantity}</div>
                                         </div>
                                     </div>

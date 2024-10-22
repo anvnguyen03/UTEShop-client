@@ -1,4 +1,3 @@
-// Cart.tsx
 import React, { useState } from 'react';
 import { Button } from 'primereact/button';
 import 'primeflex/primeflex.css';
@@ -14,6 +13,7 @@ export interface CartItem {
     image: string
     name: string
     size: string
+    color: string
     price: number
     quantity: number
     available: number
@@ -23,24 +23,26 @@ export interface CartItem {
 const mockCartItems: CartItem[] = [
     {
         id: 101,
-        image: 'https://www.primefaces.org/cdn/primereact/images/product/headphones.jpg',
-        name: 'Excellent',
+        image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-1.png',
+        name: 'White long-hand shirt',
+        color: 'Blue',
         size: 'Medium',
-        price: 20.0,
         quantity: 1,
-        available: 8,
-        deliveryDate: 'Dec 23',
+        available: 100,
+        price: 12.0,
+        deliveryDate: 'Dec 23'
     },
     {
         id: 102,
-        image: 'https://www.primefaces.org/cdn/primereact/images/product/light-green-t-shirt.jpg',
-        name: 'Holly Water',
-        size: 'Medium',
-        price: 62.0,
+        image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-2.png',
+        name: 'Jackie Chan',
+        color: 'Yellow',
+        size: 'Large',
         quantity: 1,
-        available: 2,
-        deliveryDate: 'Dec 23',
-    },
+        available: 87,
+        price: 24.0,
+        deliveryDate: 'Dec 23'
+    }
 ]
 
 const CartPage: React.FC = () => {
@@ -96,7 +98,7 @@ const CartPage: React.FC = () => {
                                         <span className="text-900 text-xl font-medium mb-3">
                                             {item.name}
                                         </span>
-                                        <span className="text-600">{item.size}</span>
+                                        <span className="text-600">{item.size} | {item.color}</span>
                                     </div>
 
                                     <div className="w-full sm:w-6 flex align-items-start justify-content-end mt-3 sm:mt-0">
