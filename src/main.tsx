@@ -16,11 +16,11 @@ const value = {
 }
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  // <StrictMode>
     <Provider store={store}>
       <PrimeReactProvider value={value}>
         <App />
       </PrimeReactProvider>
     </Provider>
-  </StrictMode>,
+  // </StrictMode>,
 )

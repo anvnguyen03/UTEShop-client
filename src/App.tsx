@@ -15,6 +15,8 @@ import ProtectedRoute from './configs/ProtectedRoute'
 import CartPage from './pages/Cart/cart'
 import CheckoutForm from './pages/Checkout/checkout'
 import OrderSummary from './pages/OrderSummary/ordersummary'
+import ScrollToTop from './configs/ScrollToTop'
+import OrderHistory from './pages/OrderHistory/orderhistory'
 
 function App() {
   const dispatch = useAppDispatch();
@@ -33,6 +35,7 @@ function App() {
   return (
     <BrowserRouter>
       <SearchProvider>
+        <ScrollToTop />
         <Routes>
           <Route path='/' element={<Navigate to='/home' />} />
           <Route path='/home' element={<HomePage />} />
@@ -48,6 +51,7 @@ function App() {
             <Route path='/cart' element={<CartPage/>}/>
             <Route path='/checkout' element={<CheckoutForm/>} />
             <Route path='/ordersummary' element={<OrderSummary/>} />
+            <Route path='/orderhistory' element={<OrderHistory/>} />
           {/* </Route> */}
         </Routes>
       </SearchProvider>

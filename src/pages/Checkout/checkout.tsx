@@ -34,12 +34,17 @@ const mockCartItems: CartItem[] = [
 ]
 
 const CheckoutForm: React.FC = () => {
-    
+
     const navigate = useNavigate()
+    const [loading, setLoading] = useState(false)
     const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems)
 
     const handlePlaceOrder = () => {
-        navigate('/ordersummary')
+        setLoading(true)
+        setTimeout(() => {
+            setLoading(false)
+            navigate('/ordersummary', { state: { showSuccess: true } })
+        }, 2000)
     }
 
     const price = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
@@ -146,22 +151,24 @@ const CheckoutForm: React.FC = () => {
                                         <span className="text-900 text-xl block ml-2">Cart</span>
                                     </div>
                                     {/* item */}
-                                    {cartItems.map((item) => (
-                                        <div className="p-2 flex flex-column lg:flex-row flex-wrap lg:align-items-center">
-                                        <img
-                                            src={item.image}
-                                            className="w-8rem h-8rem mb-3 lg:mb-0 flex-shrink-0"
-                                            alt="product"
-                                        />
-                                        <div className="flex-auto lg:ml-3">
-                                            <div className="flex align-items-center justify-content-between mb-3">
-                                                <span className="text-900 font-medium">{item.name}</span>
-                                                <span className="text-900 font-medium">${item.price}</span>
+                                    {cartItems.map((item, index) => (
+                                        <div key={index}>
+                                            <div className="p-2 flex flex-column lg:flex-row flex-wrap lg:align-items-center">
+                                                <img
+                                                    src={item.image}
+                                                    className="w-8rem h-8rem mb-3 lg:mb-0 flex-shrink-0"
+                                                    alt="product"
+                                                />
+                                                <div className="flex-auto lg:ml-3">
+                                                    <div className="flex align-items-center justify-content-between mb-3">
+                                                        <span className="text-900 font-medium">{item.name}</span>
+                                                        <span className="text-900 font-medium">${item.price}</span>
+                                                    </div>
+                                                    <div className="text-600 text-sm mb-3">{item.size} | {item.color}</div>
+                                                    <div className="text-600 text-sm mb-3">x{item.quantity}</div>
+                                                </div>
                                             </div>
-                                            <div className="text-600 text-sm mb-3">{item.size} | {item.color}</div>
-                                            <div className="text-600 text-sm mb-3">x{item.quantity}</div>
                                         </div>
-                                    </div>
                                     ))}
                                 </div>
                             </div>
@@ -258,6 +265,7 @@ const CheckoutForm: React.FC = () => {
                                 label="Place Order"
                                 className="surface-400 border-none hover:bg-primary w-full mt-3"
                                 onClick={handlePlaceOrder}
+                                loading={loading}
                             />
                         </div>
                     </div>

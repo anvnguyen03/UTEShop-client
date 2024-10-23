@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Button } from 'primereact/button'
 import 'primeflex/primeflex.css'
 import 'primereact/resources/themes/saga-blue/theme.css'
@@ -6,6 +6,10 @@ import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
 import WebLayout from '../../components/Layout/WebLayout'
 import { Steps } from 'primereact/steps'
+import { useLocation } from 'react-router-dom'
+import { Toast } from 'primereact/toast'
+import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog'
+import { MenuItem } from 'primereact/menuitem'
 
 const mockOrderItems = [
     {
@@ -30,21 +34,40 @@ const mockOrderItems = [
 
 const OrderSummary: React.FC = () => {
 
-    const [loading, setLoading] = useState(false);
+    const location = useLocation()
+    const toast = useRef<Toast>(null)
+    const [loadingCancel, setLoadingCancel] = useState(false)
+    const [isCancelDisabled, setCancelDisabled] = useState(false)
 
-    const load = () => {
-        setLoading(true);
+    const [isOrderCanceled, setOrderCanceled] = useState(false)
+
+    const acceptCancelOrder = () => {
+        setLoadingCancel(true)
 
         setTimeout(() => {
-            setLoading(false);
+            toast.current!.show({ severity: 'info', summary: 'Confirmed', detail: 'Order canceled', life: 2000 });
+            setLoadingCancel(false)
+            setCancelDisabled(true)
+            setOrderCanceled(true)
         }, 2000)
     }
 
-    const handlePrintClick = () => {
+    const handleCancelClick = () => {
+        confirmDialog({
+            message: 'Do you want to cancel this order?',
+            header: 'Cancel confirmation',
+            icon: 'pi pi-info-circle',
+            defaultFocus: 'reject',
+            acceptClassName: 'p-button-danger',
+            accept: acceptCancelOrder,
+        })
+    }
+
+    const handleReviewClick = () => {
 
     }
 
-    const process = [
+    const process: MenuItem[] = [
         {
             label: 'Ordered'
         },
@@ -59,12 +82,44 @@ const OrderSummary: React.FC = () => {
         }
     ]
 
+    const canceledStep: MenuItem[] = [
+        {
+            icon: 'pi pi-times',
+            label: 'Canceled',
+            template: (<span
+                className="inline-flex align-items-center justify-content-center align-items-center border-circle border-red-500 border-1 h-3rem w-3rem z-1 cursor-pointer"
+                style={{ backgroundColor: 'var(--red-500)', color: 'var(--surface-b)', marginTop: '-25px' }}
+            >
+                <i className={'pi pi-times text-xl'} />
+            </span>)
+        }
+    ]
+
     const price = mockOrderItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
     const discount = 12
     const total = price - discount
+
+    const showSuccess = () => {
+        toast.current!.show({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Order placed',
+            life: 2000
+        })
+    }
+
+    useEffect(() => {
+        if (location.state?.showSuccess) {
+            showSuccess()
+            console.log('show toast')
+            // Xóa state sau khi đã hiển thị toast để không lặp lại
+            window.history.replaceState({}, document.title)
+        }
+    }, [])
     return (
         <WebLayout>
             <div className="surface-section px-4 py-8 md:px-6 lg:px-8">
+                <Toast ref={toast} position='top-right' />
                 <span className="text-700 text-xl">Thanks!</span>
                 <div className="text-900 font-bold text-4xl my-2">
                     Successful Place Order 🚀
@@ -79,29 +134,35 @@ const OrderSummary: React.FC = () => {
                     }}
                 />
                 <p className='font-bold'>Order Processing</p>
-                <Steps readOnly model={process} activeIndex={0}/>
+                {!isOrderCanceled ? (
+                    <Steps readOnly model={process} activeIndex={0} />
+                ) : (
+                    <Steps readOnly model={canceledStep} activeIndex={0} />
+                )}
 
                 <div className="flex flex-column sm:flex-row sm:align-items-center sm:justify-content-between py-5">
                     <div className="mb-3 sm:mb-0">
                         <span className="font-medium text-xl text-900 mr-2">Order number:</span>
                         <span className="font-medium text-xl text-blue-500">451234</span>
                     </div>
+                    <ConfirmDialog />
                     <div>
-                        <Button 
+                        <Button
+                            disabled={isCancelDisabled}
                             className="mr-2 "
                             outlined
-                            label="Cancel" 
-                            icon="pi pi-times" 
+                            label="Cancel"
+                            icon="pi pi-times"
                             severity="danger"
-                            loading={loading} 
-                            onClick={load} />
+                            loading={loadingCancel}
+                            onClick={handleCancelClick} />
                         <Button
-                            disabled
+                            disabled={isOrderCanceled}
                             outlined
                             label="Review"
                             icon="pi pi-star"
                             severity="help"
-                            onClick={handlePrintClick}
+                            onClick={handleReviewClick}
                         />
                     </div>
                 </div>
