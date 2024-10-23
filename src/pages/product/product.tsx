@@ -8,6 +8,9 @@ import { Button } from 'primereact/button';
 import { InputNumber } from 'primereact/inputnumber';
 import WebLayout from '../../components/Layout/WebLayout';
 import { Rating } from 'primereact/rating';
+import { Divider } from 'primereact/divider';
+import { Avatar } from 'primereact/avatar';
+import { classNames } from 'primereact/utils';
 
 export default function ProductPage() {
 
@@ -40,20 +43,30 @@ export default function ProductPage() {
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL']
 
-  const reviews = [
+  const reviewsData = [
     {
-      rating: 4,
-      title: 'Absolute Perfection!',
-      description: 'Blandit libero volutpat sed cras ornare arcu dui vivamus. Arcu dictum varius duis at consectetur lorem donec massa. Imperdiet proin fermentum leo vel orci porta non. Porttitor rhoncus dolor purus non.',
-      reviewer: 'Darlene Robertson',
-      time: '2 days ago',
+      name: 'Robert Fox',
+      date: 'February 3, 2022',
+      avatar: 'https://blocks.primereact.org/demo/images/blocks/avatars/circle/avatar-m-1.png',
+      rating: 5,
+      content:
+        'Scelerisque varius morbi enim nunc. Arcu bibendum at varius vel pharetra vel turpis nunc eget.',
     },
     {
+      name: 'Savannah Williams',
+      date: 'February 4, 2022',
+      avatar: 'https://blocks.primereact.org/demo/images/blocks/avatars/circle/avatar-f-3.png',
       rating: 5,
-      title: 'Classy',
-      description: 'Venenatis cras sed felis eget. Proin nibh nisl condimentum id venenatis a condimentum.',
-      reviewer: 'Kristin Watson',
-      time: '2 days ago',
+      content:
+        'Orci porta non pulvinar neque laoreet suspendisse interdum consectetur.',
+    },
+    {
+      name: 'Kathryn Murphy',
+      date: 'February 5, 2022',
+      avatar: '	https://blocks.primereact.org/demo/images/blocks/avatars/circle/avatar-f-2.png',
+      rating: 4,
+      content:
+        'Sollicitudin nibh sit amet commodo nulla facilisi nullam vehicula.',
     },
   ]
 
@@ -242,20 +255,82 @@ export default function ProductPage() {
               </div>
             </div>
           </TabPanel>
+
           <TabPanel header="Reviews">
-            <div className="text-900 font-medium text-3xl mb-4 mt-2">Customer Reviews</div>
-            <ul className="list-none p-0 m-0">
-              {reviews.map((review, index) => (
-                <li key={index} className="pb-5 border-bottom-1 surface-border">
-                  <Rating value={review.rating} readOnly stars={5} cancel={false} className="mr-3" />
-                  <div className="text-900 font-medium text-xl my-3">{review.title}</div>
-                  <p className="mx-0 mt-0 mb-3 text-700 line-height-3">{review.description}</p>
-                  <span className="text-600 font-medium">
-                    {review.reviewer}, {review.time}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <div className="surface-section px-4 py-8 md:px-6 lg:px-8">
+              <div className="grid">
+
+                {/* Section 1: Review Stats */}
+                <div className="col-12 lg:col-6 flex align-items-start justify-content-center py-5 lg:py-0">
+                  <div className="text-center">
+                    <span className="text-5xl text-900 font-bold mr-2">{reviewsData.length}</span>
+                    <span className="text-5xl text-600">Reviews</span>
+                    <div className="mt-3">
+                      {[...Array(3)].map((_, i) => (
+                        <i key={i} className="pi pi-star-fill text-yellow-500 text-2xl mr-1"></i>
+                      ))}
+                      {[...Array(5-3)].map((_, i) => (
+                        <i className="pi pi-star-fill text-300 text-2xl mr-1"></i>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 2: Star Rating Distribution */}
+                <div className="col-12 lg:col-6">
+                  <ul className="list-none p-0 m-0">
+                    {[
+                      { stars: 5, percentage: 75, width: '75%' },
+                      { stars: 4, percentage: 50, width: '50%' },
+                      { stars: 3, percentage: 20, width: '20%' },
+                      { stars: 2, percentage: 40, width: '40%' },
+                      { stars: 1, percentage: 30, width: '30%' },
+                    ].map((item, index) => (
+                      <li key={index} className="flex align-items-center mb-2">
+                        <span className="text-900 font-medium mr-1 w-1rem">{item.stars}</span>
+                        <i className="pi pi-star-fill text-yellow-500 mr-2"></i>
+                        <div className="border-round overflow-hidden flex-auto surface-300" style={{ height: '7px' }}>
+                          <div className="h-full bg-yellow-500 border-round" style={{ width: item.width }}></div>
+                        </div>
+                        <span className="text-500 font-medium ml-2">{item.percentage}%</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <Divider />
+
+              {/* Section 3: User Reviews */}
+              <ul className="list-none m-0 p-0">
+                {reviewsData.map((review, index) => (
+                  <li key={index} className="py-5 border-top-1 surface-border">
+                    <div className="flex align-items-center justify-content-between mb-3">
+                      <div className="flex align-items-center">
+                        <Avatar
+                          image={review.avatar}
+                          shape="circle"
+                          className="w-3rem h-3rem flex-shrink-0 mr-3"
+                        />
+                        <div className="flex flex-column">
+                          <span className="text-900 font-medium mb-1">{review.name}</span>
+                          <span className="text-500 font-medium text-sm">{review.date}</span>
+                        </div>
+                      </div>
+                      <div className="flex align-items-center">
+                        <span className="mr-2">
+                          {[...Array(review.rating)].map((_, i) => (
+                            <i key={i} className="pi pi-star-fill text-yellow-500 mr-1"></i>
+                          ))}
+                        </span>
+                        <span className="font-medium">{review.rating}</span>
+                      </div>
+                    </div>
+                    <p className="text-600 p-0 m-0 line-height-3">{review.content}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </TabPanel>
         </TabView>
       </div>

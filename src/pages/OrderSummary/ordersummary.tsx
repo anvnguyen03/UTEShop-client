@@ -10,10 +10,30 @@ import { useLocation } from 'react-router-dom'
 import { Toast } from 'primereact/toast'
 import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog'
 import { MenuItem } from 'primereact/menuitem'
+import { Rating } from 'primereact/rating'
+import { InputTextarea } from 'primereact/inputtextarea'
 
-const mockOrderItems = [
+interface OrderItem {
+    id: number
+    productId: number
+    image: string
+    name: string
+    color: string
+    size: string
+    quantity: number
+    price: number
+}
+
+interface FormReview {
+    productId: number
+    rate: number | null
+    content: string
+}
+
+const mockOrderItems: OrderItem[] = [
     {
         id: 101,
+        productId: 123132,
         image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-1.png',
         name: 'White long-hand shirt',
         color: 'Blue',
@@ -23,6 +43,7 @@ const mockOrderItems = [
     },
     {
         id: 102,
+        productId: 553645,
         image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-2.png',
         name: 'Jackie Chan',
         color: 'Yellow',
@@ -36,17 +57,19 @@ const OrderSummary: React.FC = () => {
 
     const location = useLocation()
     const toast = useRef<Toast>(null)
-    const [loadingCancel, setLoadingCancel] = useState(false)
+    const [isLoading, setLoading] = useState(false)
     const [isCancelDisabled, setCancelDisabled] = useState(false)
 
     const [isOrderCanceled, setOrderCanceled] = useState(false)
+    const [selectedItem, setSelectedItem] = useState<OrderItem>()
+    const [formReview, setFormReview] = useState<FormReview>({ productId: 0, content: 'Excellent', rate: 1 })
 
     const acceptCancelOrder = () => {
-        setLoadingCancel(true)
+        setLoading(true)
 
         setTimeout(() => {
-            toast.current!.show({ severity: 'info', summary: 'Confirmed', detail: 'Order canceled', life: 2000 });
-            setLoadingCancel(false)
+            toast.current!.show({ severity: 'info', summary: 'Confirmed', detail: 'Order canceled', life: 2000 })
+            setLoading(false)
             setCancelDisabled(true)
             setOrderCanceled(true)
         }, 2000)
@@ -61,10 +84,6 @@ const OrderSummary: React.FC = () => {
             acceptClassName: 'p-button-danger',
             accept: acceptCancelOrder,
         })
-    }
-
-    const handleReviewClick = () => {
-
     }
 
     const process: MenuItem[] = [
@@ -106,6 +125,31 @@ const OrderSummary: React.FC = () => {
             detail: 'Order placed',
             life: 2000
         })
+    }
+
+    const handleReviewClick = (orderItem: OrderItem) => {
+        setSelectedItem(orderItem)
+        setFormReview({ productId: orderItem.productId, content: 'Excellent', rate: 1 })
+        confirmDialog({
+            group: 'headless',
+            message: 'Are you sure you want ?',
+            header: 'Product review',
+            icon: 'pi pi-exclamation-triangle',
+            defaultFocus: 'accept',
+        })
+    }
+
+    const submitReview = () => {
+        console.log(formReview)
+        setLoading(true)
+        setTimeout(() => {
+            toast.current?.show({ severity: 'info', summary: 'Done', detail: `Submit review for ${formReview.productId}`, life: 3000 });
+            setLoading(false)
+        }, 2000)
+    }
+
+    const handleInputChange = (field: keyof FormReview, value: any) => {
+        setFormReview((prev) => ({ ...prev, [field]: value }))
     }
 
     useEffect(() => {
@@ -154,16 +198,8 @@ const OrderSummary: React.FC = () => {
                             label="Cancel"
                             icon="pi pi-times"
                             severity="danger"
-                            loading={loadingCancel}
+                            loading={isLoading}
                             onClick={handleCancelClick} />
-                        <Button
-                            disabled={isOrderCanceled}
-                            outlined
-                            label="Review"
-                            icon="pi pi-star"
-                            severity="help"
-                            onClick={handleReviewClick}
-                        />
                     </div>
                 </div>
 
@@ -183,12 +219,78 @@ const OrderSummary: React.FC = () => {
                                     <span className="text-900 font-medium text-xl mb-2">{item.name}</span>
                                     <span className="text-600 mb-3">{`${item.color} | ${item.size}`}</span>
                                     <span className="text-900 font-medium">Quantity {item.quantity}</span>
+                                    <span className="text-900 font-medium text-lg align-content-center">
+                                        ${item.price.toFixed(2)}
+                                    </span>
                                 </div>
-                                <span className="text-900 font-medium text-lg ml-auto">
-                                    ${item.price.toFixed(2)}
-                                </span>
+                                <Button
+                                    className='ml-auto'
+                                    disabled={isOrderCanceled}
+                                    outlined
+                                    label="Review"
+                                    icon="pi pi-star"
+                                    severity="help"
+                                    onClick={() => handleReviewClick(item)}
+                                />
                             </li>
                         ))}
+                        {/* Review dialog */}
+                        <ConfirmDialog
+                            group="headless"
+                            content={({ headerRef, contentRef, footerRef, hide, message }) => (
+                                <div className="flex flex-column align-items-center p-5 surface-overlay border-round">
+                                    <div className="border-circle bg-primary inline-flex justify-content-center align-items-center h-6rem w-6rem -mt-8">
+                                        <i className="pi pi-pencil text-5xl"></i>
+                                    </div>
+                                    <span className="font-bold text-2xl block mb-2 mt-4" ref={headerRef}>
+                                        {message.header}
+                                    </span>
+                                    <img
+                                        src={selectedItem!.image}
+                                        className="w-3rem sm:w-8rem flex-shrink-0 shadow-2 mb-3"
+                                        alt={selectedItem!.name}
+                                    />
+                                    <Rating value={formReview.rate!} onChange={(e) => handleInputChange('rate', e.value)} cancel={false} />
+                                    <div className="field">
+                                        <label htmlFor="content" className="block mb-2">
+                                            Review:
+                                        </label>
+                                        <InputTextarea
+                                            id="content"
+                                            name="content"
+                                            rows={4}
+                                            cols={30}
+                                            value={formReview.content}
+                                            onChange={(e) => handleInputChange('content', e.target.value)}
+                                            autoResize
+                                        />
+                                    </div>
+
+                                    <p className="mb-0" ref={contentRef}>
+                                        {message.message}
+                                    </p>
+                                    <div className="flex align-items-center gap-2 mt-4" ref={footerRef}>
+                                        <Button
+                                            label="Submit"
+                                            onClick={(event) => {
+                                                hide(event)
+                                                submitReview()
+                                            }}
+                                            className="w-8rem"
+                                            loading={isLoading}
+                                        ></Button>
+                                        <Button
+                                            label="Cancel"
+                                            outlined
+                                            onClick={(event) => {
+                                                hide(event)
+                                            }}
+                                            className="w-8rem"
+                                        ></Button>
+                                    </div>
+                                </div>
+                            )}
+                        />
                     </ul>
                 </div>
 
