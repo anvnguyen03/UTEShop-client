@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ProductService } from '../Shop/productService';
 import { Tag } from 'primereact/tag';
@@ -11,9 +11,11 @@ import { Rating } from 'primereact/rating';
 import { Divider } from 'primereact/divider';
 import { Avatar } from 'primereact/avatar';
 import { classNames } from 'primereact/utils';
+import { Toast } from 'primereact/toast';
 
 export default function ProductPage() {
 
+  const toast = useRef<Toast>(null)
   const useQuery = () => {
     return new URLSearchParams(useLocation().search);
   };
@@ -27,6 +29,7 @@ export default function ProductPage() {
   const [selectedColor, setSelectedColor] = useState('')
   const [quantity, setQuantity] = useState<number>(1)
   const [selectedSize, setSelectedSize] = useState('')
+  const [isInWishlist, setInWishlist] = useState<boolean>(false)
 
   const thumbnails = [
     `https://www.primefaces.org/cdn/primereact/images/product/${product?.image}`,
@@ -72,11 +75,45 @@ export default function ProductPage() {
 
   const handleColorClick = (colorId) => {
     setSelectedColor(colorId)
-  };
+  }
 
   const handleSizeClick = (size) => {
     setSelectedSize(size)
-  };
+  }
+
+  const handleAddToWishlist = () => {
+    toast.current!.show({
+      severity: 'success',
+      summary: `Added to Wishlist`,
+      life: 1500,
+      content: (props) => (
+        <div className="flex flex-column align-items-left" style={{ flex: '1' }}>
+          <div className="flex align-items-center gap-2">
+            <Avatar image={`https://www.primefaces.org/cdn/primereact/images/product/${product?.image}`} shape='circle' size='large' />
+            <span className="font-bold text-900">{props.message.summary}</span>
+          </div>
+        </div>
+      )
+    })
+    setInWishlist(true)
+  }
+
+  const handleRemoveFromWishlist = () => {
+    toast.current!.show({
+      severity: 'info',
+      summary: `Removed from Wishlist`,
+      life: 1500,
+      content: (props) => (
+        <div className="flex flex-column align-items-left" style={{ flex: '1' }}>
+          <div className="flex align-items-center gap-2">
+            <Avatar image={`https://www.primefaces.org/cdn/primereact/images/product/${product?.image}`} shape='circle' size='large' />
+            <span className="font-bold text-900">{props.message.summary}</span>
+          </div>
+        </div>
+      )
+    })
+    setInWishlist(false)
+  }
 
   useEffect(() => {
 
@@ -84,6 +121,7 @@ export default function ProductPage() {
 
   return (
     <WebLayout>
+      <Toast ref={toast} position="top-right" />
       <div className="surface-section px-4 py-8 md:px-6 lg:px-8">
         <div className="grid mb-4">
           <div className="col-12 lg:col-6">
@@ -184,7 +222,12 @@ export default function ProductPage() {
               />
               <div className="flex align-items-center flex-1 mt-3 sm:mt-0 ml-0 sm:ml-5">
                 <Button label="Add to Cart" icon="pi pi-shopping-cart" className="flex-1 mr-5" />
-                <i className="pi pi-heart text-600 text-2xl cursor-pointer" />
+                {isInWishlist ? (
+                  <Button icon="pi pi-heart" rounded severity="danger" aria-label="Favorite" onClick={handleRemoveFromWishlist}/>
+                ) : (
+                  <Button icon="pi pi-heart" rounded text raised severity="danger" aria-label="Favorite" onClick={handleAddToWishlist} />
+                )
+                }
               </div>
             </div>
           </div>
@@ -269,7 +312,7 @@ export default function ProductPage() {
                       {[...Array(3)].map((_, i) => (
                         <i key={i} className="pi pi-star-fill text-yellow-500 text-2xl mr-1"></i>
                       ))}
-                      {[...Array(5-3)].map((_, i) => (
+                      {[...Array(5 - 3)].map((_, i) => (
                         <i className="pi pi-star-fill text-300 text-2xl mr-1"></i>
                       ))}
                     </div>

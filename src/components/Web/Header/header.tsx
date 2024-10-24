@@ -62,8 +62,9 @@ const Header: React.FC = () => {
             url: '/cart'
         },
         {
-            label: 'Contact',
-            icon: 'pi pi-envelope'
+            label: 'Wishlist',
+            icon: 'pi pi-heart',
+            url: '/wishlist'
         }
     ];
     const loginClick = () => {

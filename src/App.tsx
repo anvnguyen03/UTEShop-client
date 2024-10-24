@@ -17,6 +17,7 @@ import CheckoutForm from './pages/Checkout/checkout'
 import OrderSummary from './pages/OrderSummary/ordersummary'
 import ScrollToTop from './configs/ScrollToTop'
 import OrderHistory from './pages/OrderHistory/orderhistory'
+import WishList from './pages/Wishlist/wishlist'
 
 function App() {
   const dispatch = useAppDispatch();
@@ -52,6 +53,7 @@ function App() {
             <Route path='/checkout' element={<CheckoutForm/>} />
             <Route path='/ordersummary' element={<OrderSummary/>} />
             <Route path='/orderhistory' element={<OrderHistory/>} />
+            <Route path='/wishlist' element={<WishList/>} />
           {/* </Route> */}
         </Routes>
       </SearchProvider>
