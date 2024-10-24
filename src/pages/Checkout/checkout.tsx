@@ -7,6 +7,7 @@ import 'primeicons/primeicons.css'
 import WebLayout from '../../components/Layout/WebLayout'
 import { useNavigate } from 'react-router-dom'
 import { CartItem } from '../Cart/cart'
+import { InputText } from 'primereact/inputtext'
 
 const mockCartItems: CartItem[] = [
     {
@@ -237,6 +238,21 @@ const CheckoutForm: React.FC = () => {
 
                     {/* Order Summary */}
                     <div className="col-12 lg:col-3 p-3">
+                        <div className="surface-card p-4 border-round shadow-2 mb-3">
+                            <div className="border-bottom-1 surface-border pb-4">
+                                <span className="text-900 text-xl block">Discount/ Coupon</span>
+                            </div>
+                            <div className="p-inputgroup flex-1">
+                                <Button label="Apply" />
+                                <InputText placeholder="HASSHIT" />
+                            </div>
+                            <div className="border-bottom-1 surface-border my-3 py-2">
+                                <div className="flex justify-content-between mb-3">
+                                    <span className="text-900 font-medium">Discount</span>
+                                    <span className="text-900 font-bold">${discount}</span>
+                                </div>
+                            </div>
+                        </div>
                         <div className="surface-card p-4 border-round shadow-2">
                             <div className="border-bottom-1 surface-border pb-4">
                                 <span className="text-900 text-xl block">Order Summary</span>

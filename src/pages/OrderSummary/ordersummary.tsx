@@ -192,7 +192,7 @@ const OrderSummary: React.FC = () => {
                     <ConfirmDialog />
                     <div>
                         <Button
-                            disabled={isCancelDisabled}
+                            visible={!isCancelDisabled}
                             className="mr-2 "
                             outlined
                             label="Cancel"
@@ -225,7 +225,7 @@ const OrderSummary: React.FC = () => {
                                 </div>
                                 <Button
                                     className='ml-auto'
-                                    disabled={isOrderCanceled}
+                                    visible={!isOrderCanceled}
                                     outlined
                                     label="Review"
                                     icon="pi pi-star"
