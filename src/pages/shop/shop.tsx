@@ -10,7 +10,7 @@ import { Dropdown } from 'primereact/dropdown';
 import WebLayout from '../../components/Layout/WebLayout';
 import { SearchContext } from './search';
 
-interface Product {
+export interface Product {
     id: string;
     code: string;
     name: string;

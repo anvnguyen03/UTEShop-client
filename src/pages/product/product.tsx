@@ -1,17 +1,17 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-import { ProductService } from '../Shop/productService';
-import { Tag } from 'primereact/tag';
-import { TabPanel, TabView } from 'primereact/tabview';
-import { Button } from 'primereact/button';
-import { InputNumber } from 'primereact/inputnumber';
-import WebLayout from '../../components/Layout/WebLayout';
-import { Rating } from 'primereact/rating';
-import { Divider } from 'primereact/divider';
-import { Avatar } from 'primereact/avatar';
-import { classNames } from 'primereact/utils';
-import { Toast } from 'primereact/toast';
+import React, { useState, useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
+import { ProductService } from '../Shop/productService'
+import { TabPanel, TabView } from 'primereact/tabview'
+import { Button } from 'primereact/button'
+import { InputNumber } from 'primereact/inputnumber'
+import WebLayout from '../../components/Layout/WebLayout'
+import { Divider } from 'primereact/divider'
+import { Avatar } from 'primereact/avatar'
+import { Toast } from 'primereact/toast'
+import { Product } from '../Shop/shop'
+import { Carousel, CarouselResponsiveOption } from 'primereact/carousel'
+import { Tag } from 'primereact/tag'
 
 export default function ProductPage() {
 
@@ -115,9 +115,69 @@ export default function ProductPage() {
     setInWishlist(false)
   }
 
-  useEffect(() => {
+  // related products
+  const [products, setProducts] = useState<Product[]>([])
+  const responsiveOptions: CarouselResponsiveOption[] = [
+    {
+      breakpoint: '1400px',
+      numVisible: 2,
+      numScroll: 1
+    },
+    {
+      breakpoint: '1199px',
+      numVisible: 3,
+      numScroll: 1
+    },
+    {
+      breakpoint: '767px',
+      numVisible: 2,
+      numScroll: 1
+    },
+    {
+      breakpoint: '575px',
+      numVisible: 1,
+      numScroll: 1
+    }
+  ]
 
-  }, []);
+  const getSeverity = (product: Product) => {
+    switch (product.inventoryStatus) {
+      case 'INSTOCK':
+        return 'success';
+
+      case 'LOWSTOCK':
+        return 'warning';
+
+      case 'OUTOFSTOCK':
+        return 'danger';
+
+      default:
+        return null;
+    }
+  }
+
+  const productTemplate = (product: Product) => {
+    return (
+      <div className="border-1 surface-border border-round m-2 text-center py-5 px-3">
+        <div className="mb-3">
+          <img src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`} alt={product.name} className="w-6 shadow-2" />
+        </div>
+        <div>
+          <h4 className="mb-1">{product.name}</h4>
+          <h6 className="mt-0 mb-3">${product.price}</h6>
+          <Tag value={product.inventoryStatus} severity={getSeverity(product)}></Tag>
+          <div className="mt-5 flex flex-wrap gap-2 justify-content-center">
+            <Button icon="pi pi-search" className="p-button p-button-rounded" />
+            <Button icon="pi pi-shopping-cart" className="p-button-success p-button-rounded" />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  useEffect(() => {
+    ProductService.getProductsSmall().then((data) => setProducts(data.slice(0, 9)))
+  }, [])
 
   return (
     <WebLayout>
@@ -223,7 +283,7 @@ export default function ProductPage() {
               <div className="flex align-items-center flex-1 mt-3 sm:mt-0 ml-0 sm:ml-5">
                 <Button label="Add to Cart" icon="pi pi-shopping-cart" className="flex-1 mr-5" />
                 {isInWishlist ? (
-                  <Button icon="pi pi-heart" rounded severity="danger" aria-label="Favorite" onClick={handleRemoveFromWishlist}/>
+                  <Button icon="pi pi-heart" rounded severity="danger" aria-label="Favorite" onClick={handleRemoveFromWishlist} />
                 ) : (
                   <Button icon="pi pi-heart" rounded text raised severity="danger" aria-label="Favorite" onClick={handleAddToWishlist} />
                 )
@@ -313,7 +373,7 @@ export default function ProductPage() {
                         <i key={i} className="pi pi-star-fill text-yellow-500 text-2xl mr-1"></i>
                       ))}
                       {[...Array(5 - 3)].map((_, i) => (
-                        <i className="pi pi-star-fill text-300 text-2xl mr-1"></i>
+                        <i key={i} className="pi pi-star-fill text-300 text-2xl mr-1"></i>
                       ))}
                     </div>
                   </div>
@@ -376,6 +436,12 @@ export default function ProductPage() {
             </div>
           </TabPanel>
         </TabView>
+        <Divider />
+        <div className='card flex flex-column'>
+          <div className='text-900 mb-2 text-2xl' style={{ textAlign: 'center' }}>Related Products</div>
+          <Carousel value={products} numVisible={3} numScroll={3} responsiveOptions={responsiveOptions} className="custom-carousel" circular
+            autoplayInterval={3000} itemTemplate={productTemplate} />
+        </div>
       </div>
     </WebLayout>
   )
