@@ -5,12 +5,12 @@ import { fetchAccount } from './redux/slice/accountSlide'
 import HomePage from './pages/Home/home'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import RegisterPage from './pages/Register/register'
-import ShopPage from './pages/Shop/shop'
-import ViewProductPage from './pages/Product/product'
+import ShopPage from './pages/shop/shop'
+import ViewProductPage from './pages/product/product'
 import ForgotPassword from './pages/ResetPassword/sentotp'
 import VerifyOTP from './pages/ResetPassword/verifyotp'
 import ResetPassword from './pages/ResetPassword/resetpassword'
-import { SearchProvider } from './pages/Shop/search'
+import { SearchProvider } from './pages/shop/search'
 import ProtectedRoute from './configs/ProtectedRoute'
 import CartPage from './pages/Cart/cart'
 import CheckoutForm from './pages/Checkout/checkout'
@@ -42,7 +42,7 @@ function App() {
           <Route path='/home' element={<HomePage />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path='/shop' element={<ShopPage />} />
+          <Route path='/shop/:categoryName?' element={<ShopPage />} />
           <Route path='/product' element={<ViewProductPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />

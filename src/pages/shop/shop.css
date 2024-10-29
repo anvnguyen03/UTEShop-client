@@ -1,0 +1,16 @@
+.category-button {
+    color: #6b7280;
+    border: solid 1px;
+    border-radius: 20px;
+    text-decoration: none;
+    padding: 8px;
+    margin: 10px;
+    margin-left: 0;
+}
+
+.category-button:hover {
+    color: white;
+    background-color: #3b82f6;
+    text-decoration-line: none;
+    cursor: pointer;
+}
