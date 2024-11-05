@@ -11,7 +11,9 @@ import { Avatar } from 'primereact/avatar'
 import { Toast } from 'primereact/toast'
 import { Product } from '../Shop/shop'
 import { Carousel, CarouselResponsiveOption } from 'primereact/carousel'
+import * as api from '../../api/api'
 import { Tag } from 'primereact/tag'
+import { IBackendRes, IGetOneProduct } from '../../types/backend'
 
 export default function ProductPage() {
 
@@ -20,24 +22,15 @@ export default function ProductPage() {
     return new URLSearchParams(useLocation().search);
   };
   const query = useQuery();
-  const id = query.get('id');
-  const product = ProductService.getProductById(id)
-
-  const [selectedImage, setSelectedImage] = useState<string>(
-    `https://www.primefaces.org/cdn/primereact/images/product/${product?.image}` // Default image
-  );
+  const productId = query.get('id')
+  const [product, setProduct] = useState<IGetOneProduct>()
+  const [selectedImage, setSelectedImage] = useState<string>();
   const [selectedColor, setSelectedColor] = useState('')
   const [quantity, setQuantity] = useState<number>(1)
   const [selectedSize, setSelectedSize] = useState('')
   const [isInWishlist, setInWishlist] = useState<boolean>(false)
-
-  const thumbnails = [
-    `https://www.primefaces.org/cdn/primereact/images/product/${product?.image}`,
-    "https://www.primefaces.org/cdn/primereact/images/product/headphones.jpg",
-    "https://www.primefaces.org/cdn/primereact/images/product/light-green-t-shirt.jpg",
-    "https://www.primefaces.org/cdn/primereact/images/product/lime-band.jpg",
-  ]
-
+  const [thumbnails, setThumbnails] = useState<[]>()
+  const [loading, setLoading] = useState<boolean>(false)
   const colors = [
     { id: 'bluegray', className: 'bg-bluegray-500' },
     { id: 'green', className: 'bg-green-500' },
@@ -175,9 +168,46 @@ export default function ProductPage() {
     )
   }
 
+  const handleAddToCart = async () => {
+      setLoading(true)
+      try {
+        const response = await api.addToCart(productId!, quantity)
+        if (response?.data) {
+          console.log('data: ' + response?.data.data)
+          toast.current!.show({
+            severity: 'success',
+            summary: `Added to cart`,
+            life: 1500,
+            content: (props) => (
+              <div className="flex flex-column align-items-left" style={{ flex: '1' }}>
+                <div className="flex align-items-center gap-2">
+                  <Avatar image={product?.images[0]} shape='circle' size='large' />
+                  <span className="font-bold text-900">{props.message.summary}</span>
+                </div>
+              </div>
+            )
+          })
+        }
+      } catch (error) {
+        console.log('error: ' + error)
+      } finally {
+        setLoading(false)
+      }
+  }
+
   useEffect(() => {
-    ProductService.getProductsSmall().then((data) => setProducts(data.slice(0, 9)))
-  }, [])
+    ProductService.getProductsSmall().then((data) => setProducts(data.slice(0, 9))) // related product
+    const getOneProduct = async () => {
+      const response: any = await api.getProduct(productId!)
+      if (response?.data) {
+        setProduct(response.data);
+        setThumbnails(response.data.images)
+        setSelectedImage(response.data.images[0])
+      }
+    }
+    getOneProduct()
+
+  }, [productId])
 
   return (
     <WebLayout>
@@ -187,7 +217,7 @@ export default function ProductPage() {
           <div className="col-12 lg:col-6">
             <div className="flex">
               <div className="flex flex-column w-2 justify-content-between">
-                {thumbnails.map((thumbnail, index) => (
+                {thumbnails && (thumbnails!.map((thumbnail, index) => (
                   <img
                     key={index}
                     src={thumbnail}
@@ -196,7 +226,7 @@ export default function ProductPage() {
                       }`}
                     onClick={() => setSelectedImage(thumbnail)}
                   />
-                ))}
+                )))}
               </div>
               <div className="pl-3 w-10">
                 <img
@@ -242,7 +272,7 @@ export default function ProductPage() {
                 ))}
               </div>
               <span className="text-sm">
-                <b className="text-900 mr-1">104</b> <span className="text-500" />
+                <b className="text-900 mr-1">{product?.stock}</b> <span className="text-500" />
                 in stock
               </span>
             </div>
@@ -279,9 +309,10 @@ export default function ProductPage() {
                 incrementButtonClassName="p-button-text"
                 inputClassName="w-3rem text-center"
                 min={0}
+                max={product?.stock}
               />
               <div className="flex align-items-center flex-1 mt-3 sm:mt-0 ml-0 sm:ml-5">
-                <Button label="Add to Cart" icon="pi pi-shopping-cart" className="flex-1 mr-5" />
+                <Button onClick={handleAddToCart} loading={loading} label="Add to Cart" icon="pi pi-shopping-cart" className="flex-1 mr-5" />
                 {isInWishlist ? (
                   <Button icon="pi pi-heart" rounded severity="danger" aria-label="Favorite" onClick={handleRemoveFromWishlist} />
                 ) : (
@@ -298,12 +329,7 @@ export default function ProductPage() {
               Product Details
             </div>
             <p className="line-height-3 text-700 p-0 mx-0 mt-0 mb-4">
-              Volutpat maecenas volutpat blandit aliquam etiam erat velit
-              scelerisque in. Duis ultricies lacus sed turpis tincidunt id. Sed
-              tempus urna et pharetra. Metus vulputate eu scelerisque felis
-              imperdiet proin fermentum. Venenatis urna cursus eget nunc scelerisque
-              viverra mauris in. Viverra justo nec ultrices dui sapien eget mi
-              proin. Laoreet suspendisse interdum consectetur libero id faucibus.
+              {product?.description}
             </p>
             <div className="grid">
               <div className="col-12 lg:col-4">

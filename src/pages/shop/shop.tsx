@@ -15,7 +15,7 @@ import { IGetCategory, IGetProduct } from '../../types/backend';
 
 
 export default function ShopPage() {
-    const {categoryName} = useParams();
+    const { categoryName } = useParams();
     const [products, setProducts] = useState<IGetProduct[]>([]);
     const [categories, setCategories] = useState<IGetCategory[]>([]);
     const [layout, setLayout] = useState('grid');
@@ -26,26 +26,26 @@ export default function ShopPage() {
     const sortOptions = [
         { label: 'Price High to Low', value: '!price' },
         { label: 'Price Low to High', value: 'price' },
-        {label: 'Category from a-z', value: 'category'},
+        { label: 'Category from a-z', value: 'category' },
     ];
 
     useEffect(() => {
         // ProductService.getProducts().then((data) => setProducts(data.slice(0, 12)));
         const getAllCategory = async () => {
             const response: any = await api.getAllCategory();
-            if(response?.data) {
+            if (response?.data) {
                 setCategories(response.data);
             }
         }
         getAllCategory();
         const getProducts = async () => {
             let response: any;
-            if(!categoryName) {
+            if (!categoryName) {
                 response = await api.getAllProducts();
             } else {
                 response = await api.getProductsByCategoryName(categoryName);
             }
-            setProducts(response.data? response.data : []);
+            setProducts(response.data ? response.data : []);
         }
         getProducts();
     }, [categoryName]);
@@ -56,13 +56,13 @@ export default function ShopPage() {
 
     const getSeverity = (product: IGetProduct) => {
         switch (product.inventoryStatus) {
-            case 'INSTOCK':
+            case 'In Stock':
                 return 'success';
 
-            case 'LOWSTOCK':
+            case 'Low Stock':
                 return 'warning';
 
-            case 'OUTOFSTOCK':
+            case 'Out of Stock':
                 return 'danger';
 
             default:
@@ -70,7 +70,7 @@ export default function ShopPage() {
         }
     };
 
-    const onSortChange = (event:any) => {
+    const onSortChange = (event: any) => {
         const value = event.value;
 
         if (value.indexOf('!') === 0) {
@@ -88,7 +88,7 @@ export default function ShopPage() {
         return (
             <div className="col-12" key={product.id}>
                 <div className={classNames('flex flex-column xl:flex-row xl:align-items-start p-4 gap-4', { 'border-top-1 surface-border': index !== 0 })}>
-                <a href={`/product?id=${product.id}`}><img className="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round" src={product.image} alt={product.name} /></a>
+                    <a href={`/product?id=${product.id}`}><img className="w-9 sm:w-16rem xl:w-10rem shadow-2 block xl:block mx-auto border-round" src={product.image} alt={product.name} /></a>
                     <div className="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-4">
                         <div className="flex flex-column align-items-center sm:align-items-start gap-3">
                             <div className="text-2xl font-bold text-900">{product.name}</div>
@@ -135,7 +135,7 @@ export default function ShopPage() {
                     </div>
                 </div>
             </>
-            
+
         );
     };
 
@@ -157,13 +157,19 @@ export default function ShopPage() {
                         <DataViewLayoutOptions layout={layout} onChange={(e) => setLayout(e.value)} />
                     </div>
                 </div>
-                <div className='flex mt-3'>
+                <div className='flex mt-3 flex-wrap'>
+                    <Link key="kasdawd;oadw"
+                        className='category-button'
+                        to={"/shop"}
+                    >
+                        All
+                    </Link>
                     {
                         categories.map((category: any, index: any) => (
-                            <Link key={index} 
+                            <Link key={index}
                                 className='category-button'
                                 to={"/shop/" + category.name.replace(/ /g, "-")}
-                                >
+                            >
                                 {category.name}
                             </Link>
                         ))
@@ -174,20 +180,19 @@ export default function ShopPage() {
     };
 
     return (
-        <WebLayout>            
+        <WebLayout>
             <div className="card">
-                
-                <DataView 
-                    value={products} 
-                    itemTemplate={itemTemplate} 
-                    layout={layout} 
-                    header={header()} 
+
+                <DataView
+                    value={products}
+                    itemTemplate={itemTemplate}
+                    layout={layout}
+                    header={header()}
                     sortField={sortField}
-                    sortOrder={sortOrder === 1 || sortOrder === -1 ? sortOrder : null} 
+                    sortOrder={sortOrder === 1 || sortOrder === -1 ? sortOrder : null}
                     paginator
                     rows={6} />
             </div>
         </WebLayout>
     )
 }
-        
