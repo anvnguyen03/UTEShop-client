@@ -5,7 +5,7 @@ import { InputText } from 'primereact/inputtext';
 import { useAppSelector } from '../../../redux/hooks';
 import { Button } from 'primereact/button';
 import { useContext } from 'react';
-import { SearchContext } from '../../../pages/Shop/search'
+import { SearchContext } from '../../../pages/shop/search'
 import AvatarHeader from './avatar';
 import { Link } from 'react-router-dom';
 
@@ -27,34 +27,6 @@ const Header: React.FC = () => {
             label: 'Shop',
             icon: 'pi pi-shop',
             url: '/shop',
-            items: [
-                {
-                    label: 'Components',
-                    icon: 'pi pi-bolt'
-                },
-                {
-                    label: 'Blocks',
-                    icon: 'pi pi-server'
-                },
-                {
-                    label: 'UI Kit',
-                    icon: 'pi pi-pencil'
-                },
-                {
-                    label: 'Templates',
-                    icon: 'pi pi-palette',
-                    items: [
-                        {
-                            label: 'Apollo',
-                            icon: 'pi pi-palette'
-                        },
-                        {
-                            label: 'Ultima',
-                            icon: 'pi pi-palette'
-                        }
-                    ]
-                }
-            ]
         },
         {
             label: 'Cart',
