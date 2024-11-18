@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'primereact/button';
 import 'primeflex/primeflex.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
@@ -7,65 +7,63 @@ import 'primeicons/primeicons.css';
 import WebLayout from '../../components/Layout/WebLayout';
 import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 import { useNavigate } from 'react-router-dom';
-
-export interface CartItem {
-    id: number
-    image: string
-    name: string
-    size: string
-    color: string
-    price: number
-    quantity: number
-    available: number
-    deliveryDate: string
-}
-
-const mockCartItems: CartItem[] = [
-    {
-        id: 101,
-        image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-1.png',
-        name: 'White long-hand shirt',
-        color: 'Blue',
-        size: 'Medium',
-        quantity: 1,
-        available: 100,
-        price: 12.0,
-        deliveryDate: 'Dec 23'
-    },
-    {
-        id: 102,
-        image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-2.png',
-        name: 'Jackie Chan',
-        color: 'Yellow',
-        size: 'Large',
-        quantity: 1,
-        available: 87,
-        price: 24.0,
-        deliveryDate: 'Dec 23'
-    }
-]
+import * as api from '../../api/api';
+import { ICartItem } from '../../types/backend';
 
 const CartPage: React.FC = () => {
     const navigate = useNavigate()
-    const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems)
+    const [cartItems, setCartItems] = useState<ICartItem[]>([]);
+    const [total, setTotal] = useState(0);
+    const [subtotal, setSubtotal] = useState(0);
 
-    const handleQuantityChange = (e: InputNumberValueChangeEvent, itemId: number) => {
+    useEffect(() => {
+        console.log(cartItems.length);
+        const getCarts = async() => {
+            const response: any = await api.getCarts();
+            if (response?.data) {
+                setCartItems(response.data.cartItems);
+                setSubtotal(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)); 
+                setTotal(subtotal);
+            }
+        }
+        getCarts();
+        
+        console.log(subtotal);
+    }, []);
+
+    useEffect(() => {
+        const calculatedSubtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        setSubtotal(calculatedSubtotal);
+        setTotal(calculatedSubtotal);
+    }, [cartItems]);
+
+    const handleQuantityChange = (e: InputNumberValueChangeEvent, itemId: string) => {
         const updatedCart = cartItems.map((item) =>
             item.id === itemId ? { ...item, quantity: e.value || 0 } : item
         );
-        setCartItems(updatedCart)
+        setCartItems(updatedCart);
+        setSubtotal(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)); 
+        setTotal(subtotal);
     }
 
-    const handleRemove = (itemId: number) => {
+    const handleRemove = (itemId: string) => {
         const updatedCart = cartItems.filter((item) => item.id !== itemId);
-        setCartItems(updatedCart)
+        setCartItems(updatedCart);
+        setSubtotal(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)); 
+        setTotal(subtotal);
     }
-
-    const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
-    const total = subtotal
 
     const handleCheckout = async () => {
-        navigate('/checkout')
+        // call api update cart
+        const updateCart = async() => {
+            const response: any = await api.updateCart(cartItems);
+            if (response?.data) {
+                console.log(response.data);
+                // navigate to checkout
+                navigate('/checkout');
+            }   
+        }
+        updateCart();
     }
 
     return (
@@ -104,7 +102,7 @@ const CartPage: React.FC = () => {
                                     <div className="w-full sm:w-6 flex align-items-start justify-content-end mt-3 sm:mt-0">
                                         <div className="flex flex-column sm:align-items-end">
                                             <span className="text-900 text-2xl font-medium mb-2 sm:mb-3">
-                                                ${item.price.toFixed(2)}
+                                                ${(item.price * item.quantity).toFixed(2)}
                                             </span>
                                             <a
                                                 className="cursor-pointer text-pink-500 font-medium hover:text-pink-600 transition-colors transition-duration-300"

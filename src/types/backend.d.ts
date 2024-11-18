@@ -23,6 +23,13 @@ export interface IGetAccount {
     role: string;
 }
 
+export interface IGetAddress {
+    address: string;
+    city: string;
+    country: string;
+    telephone: string;
+}
+
 export interface IGetCategory {
     name: string;
 }
@@ -48,4 +55,17 @@ export type IGetOneProduct = {
     inventoryStatus: string,
     rating: number,
     stock: number;
+}
+
+export type ICartItem = {
+    id: string,     // productId
+    image: string,
+    name: string,
+    quantity: number,
+    available: number,
+    price: number
+}
+
+export type IGetCart = {
+    cartItems: ICartItem[],
 }

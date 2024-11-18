@@ -7,6 +7,9 @@ export const fetchAccount = createAsyncThunk(
     'account/fetchAccount',
     async () => {
         const response: any = await callFetchAccount();
+        if(response.status == 403) {
+            return undefined;
+        }
         return response.data;
     }
 )

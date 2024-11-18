@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, IGetAccount, IGetCategory, IGetOneProduct, IGetProduct } from '../types/backend';
+import { IAccount, IBackendRes, ICartItem, IGetAccount, IGetAddress, IGetCart, IGetCategory, IGetOneProduct, IGetProduct } from '../types/backend';
 import axios from './axios-customize';
 
 export const callLogin = (email: string, password: string) => {
@@ -7,6 +7,10 @@ export const callLogin = (email: string, password: string) => {
 
 export const callFetchAccount = () => {
     return axios.get<IBackendRes<IGetAccount>>('/api/v1/auth/account')
+}
+
+export const callFetchAddress = () => {
+    return axios.get<IBackendRes<IGetAddress>>('/api/v1/users');
 }
 
 export const callSentOtp = (email: string) => {
@@ -48,3 +52,10 @@ export const addToCart = async (productId: string, quantity: number) => {
     return axios.post<IBackendRes<any>>(`/api/v1/carts`, { productId, quantity });
 }
 
+export const getCarts = async () => {
+    return axios.get<IBackendRes<IGetCart>>("/api/v1/carts");
+}
+
+export const updateCart = async (cartItems: ICartItem[]) => {
+    return axios.put<IBackendRes<IGetCart>>("/api/v1/carts/update", cartItems);
+}

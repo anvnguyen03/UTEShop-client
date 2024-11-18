@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ProductService } from '../Shop/productService'
 import { TabPanel, TabView } from 'primereact/tabview'
 import { Button } from 'primereact/button'
@@ -17,6 +17,7 @@ import { IBackendRes, IGetOneProduct } from '../../types/backend'
 
 export default function ProductPage() {
 
+  const navigate = useNavigate();
   const toast = useRef<Toast>(null)
   const useQuery = () => {
     return new URLSearchParams(useLocation().search);
@@ -171,9 +172,12 @@ export default function ProductPage() {
   const handleAddToCart = async () => {
       setLoading(true)
       try {
-        const response = await api.addToCart(productId!, quantity)
-        if (response?.data) {
-          console.log('data: ' + response?.data.data)
+        const response = await api.addToCart(productId!, quantity);
+        if(response.status == 403) {
+          navigate('/login');
+        }
+        else if (response?.data) {
+          console.log('data: ' + JSON.stringify(response?.data));
           toast.current!.show({
             severity: 'success',
             summary: `Added to cart`,
@@ -188,7 +192,7 @@ export default function ProductPage() {
             )
           })
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log('error: ' + error)
       } finally {
         setLoading(false)

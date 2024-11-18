@@ -67,8 +67,7 @@ instance.interceptors.response.use(
             alert(`You don't have permission to visit this page. OK ?`);
             window.location.href = "/";
         }
-
-        return error?.response?.data ?? Promise.reject(error);
+        return error?.response ?? Promise.reject(error);
     }
 );
 

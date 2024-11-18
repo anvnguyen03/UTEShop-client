@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from 'primereact/button'
 import 'primeflex/primeflex.css'
 import 'primereact/resources/themes/saga-blue/theme.css'
@@ -6,39 +6,20 @@ import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
 import WebLayout from '../../components/Layout/WebLayout'
 import { useNavigate } from 'react-router-dom'
-import { CartItem } from '../Cart/cart'
 import { InputText } from 'primereact/inputtext'
-
-const mockCartItems: CartItem[] = [
-    {
-        id: 101,
-        image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-1.png',
-        name: 'White long-hand shirt',
-        color: 'Blue',
-        size: 'Medium',
-        quantity: 1,
-        available: 100,
-        price: 12.0,
-        deliveryDate: 'Dec 23'
-    },
-    {
-        id: 102,
-        image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-2.png',
-        name: 'Jackie Chan',
-        color: 'Yellow',
-        size: 'Large',
-        quantity: 1,
-        available: 87,
-        price: 24.0,
-        deliveryDate: 'Dec 23'
-    }
-]
+import * as api from '../../api/api';
+import { ICartItem, IGetAddress } from '../../types/backend'
 
 const CheckoutForm: React.FC = () => {
 
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
-    const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems)
+    const [cartItems, setCartItems] = useState<ICartItem[]>([]);
+    const [total, setTotal] = useState(0);
+    const [subtotal, setSubtotal] = useState(0);
+    const [discount, setDiscount] = useState(0);
+    const [price, setPrice] = useState(0);
+    const [address, setAddress] = useState<IGetAddress>();
 
     const handlePlaceOrder = () => {
         setLoading(true)
@@ -48,9 +29,32 @@ const CheckoutForm: React.FC = () => {
         }, 2000)
     }
 
-    const price = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
-    const discount = 12
-    const total = price - discount
+    useEffect(() => {
+        console.log(cartItems.length);
+        const getCarts = async() => {
+            const response: any = await api.getCarts();
+            if (response?.data) {
+                setCartItems(response.data.cartItems);
+                setSubtotal(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)); 
+                setTotal(subtotal);
+            }
+        }
+        getCarts();
+        const getAddress = async() => {
+            const response: any = await api.callFetchAddress();
+            if (response?.data) {
+                setAddress(response.data);
+            }
+        }
+        getAddress();
+    }, []);
+
+    useEffect(() => {
+        setPrice(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0));
+        setDiscount(12);
+        const calculatedTotal = price - discount;
+        setTotal(calculatedTotal);
+    })
 
     return (
         <WebLayout>
@@ -95,10 +99,10 @@ const CheckoutForm: React.FC = () => {
                                                     </span>
                                                 </div>
                                                 <span className="inline-block text-600 mb-3">
-                                                    Jacob Obrechtstraat 5, 1071 KC Amsterdam The Netherlands
+                                                    {address?.address}
                                                 </span>
                                                 <span className="inline-block text-600">
-                                                    <i className="pi pi-mobile mr-2" /> +123456789
+                                                    <i className="pi pi-mobile mr-2" /> {address?.telephone}
                                                 </span>
                                             </div>
                                         </div>
@@ -165,7 +169,6 @@ const CheckoutForm: React.FC = () => {
                                                         <span className="text-900 font-medium">{item.name}</span>
                                                         <span className="text-900 font-medium">${item.price}</span>
                                                     </div>
-                                                    <div className="text-600 text-sm mb-3">{item.size} | {item.color}</div>
                                                     <div className="text-600 text-sm mb-3">x{item.quantity}</div>
                                                 </div>
                                             </div>
