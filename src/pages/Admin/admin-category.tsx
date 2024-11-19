@@ -1,37 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import { Button } from 'primereact/button';
 import { Sidebar } from "primereact/sidebar";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 
-const AdminCategory: React.FC = () => {
+import * as api from '../../api/api';
+import { IBackendRes, IGetCategory } from '../../types/backend';
 
+const AdminCategory: React.FC = () => {
     const [visible, setVisible] = useState(false);
-    const [categories, setCategories] = useState([
-        { name: "Category 1", description: "Description 1" },
-        { name: "Category 2", description: "Description 2" },
-        { name: "Category 3", description: "Description 3" },
-        { name: "Category 3", description: "Description 3" },
-        { name: "Category 3", description: "Description 3" },
-        { name: "Category 3", description: "Description 3" },
-        { name: "Category 3", description: "Description 3" },
-        { name: "Category 3", description: "Description 3" },
-    ]);
+    const [categories, setCategories] = useState<IGetCategory[]>([]);
     const [formData, setFormData] = useState({
         name: "",
-        description: "",
     });
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response: any = await api.getAllCategory();
+                if (response?.data) {
+                    setCategories(response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = () => {
-        setCategories([...categories, formData]);
-        setFormData({ name: "", description: "" }); 
-        setVisible(false); 
+    const handleSubmit = async (e: FormEvent): Promise<void> => {
+        e.preventDefault();
+        setCategories([...categories, { name: formData.name }]);
+        // console.log('categỏy', categories, formData)
+        await api.addToCategory(formData)
+
+        setVisible(false);
     };
 
     return (
@@ -41,12 +51,12 @@ const AdminCategory: React.FC = () => {
                 <div className="text-gray-500 font-light">Dashboards / </div>
                 <label className="ml-1 font-semibold">Category</label>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'center', fontSize: 'large', marginBottom: '12px'}}>
+            <div style={{ display: 'flex', justifyContent: 'center', fontSize: 'large', marginBottom: '12px' }}>
                 Category
             </div>
 
             {/* Content */}
-            <div style={{marginBottom: '8px', background: '#fff', paddingTop: '10px'}}>
+            <div style={{ marginBottom: '8px', background: '#fff', paddingTop: '10px' }}>
                 <div className="category" style={{ display: 'flex', justifyContent: 'end', marginRight: '15px' }}>
                     <Button
                         label="Add Category"
@@ -60,7 +70,6 @@ const AdminCategory: React.FC = () => {
                     <DataTable value={categories} className="row-border hover" paginator rows={6} responsiveLayout="scroll">
                         <Column header="STT" body={(rowData, { rowIndex }) => rowIndex + 1} />
                         <Column field="name" header="Category Name" />
-                        <Column field="description" header="Description" />
                     </DataTable>
                 </div>
 
@@ -79,21 +88,6 @@ const AdminCategory: React.FC = () => {
                                 value={formData.name}
                                 onChange={handleInputChange}
                                 placeholder="Enter category name"
-                                className="w-full"
-                            />
-                        </div>
-
-                        {/* Description */}
-                        <div className="field mb-4">
-                            <label htmlFor="description" className="block font-medium mb-2">
-                                Description
-                            </label>
-                            <InputText
-                                id="description"
-                                name="description"
-                                value={formData.description}
-                                onChange={handleInputChange}
-                                placeholder="Enter description"
                                 className="w-full"
                             />
                         </div>

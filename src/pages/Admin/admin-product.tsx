@@ -2,57 +2,58 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
+
+import * as api from '../../api/api';
+import { IGetProduct } from '../../types/backend';
 
 const AdminProduct: React.FC = () => {
-    const [products, setProducts] = useState<any[]>([]);
-    const navigate = useNavigate(); 
+    const [products, setProducts] = useState<IGetProduct[]>([]);
+    const [loading, setLoading] = useState<boolean>(false); // Trạng thái tải dữ liệu
+    const navigate = useNavigate();
 
-    const sampleProduct = {
-        id: 1,
-        name: 'Product Name',
-        price: 99.99,
-        img1: 'image_url_1.jpg',
-        img2: 'image_url_2.jpg',
-        img3: 'image_url_3.jpg',
-        status: 'AVAILABLE',  
-        stock: 10, 
-    };
-
-    const sampleProducts = [
-        sampleProduct,
-        { ...sampleProduct, id: 2, name: 'Product 2', price: 59.99, stock: 5, status: 'DELETED' },
-        { ...sampleProduct, id: 3, name: 'Product 3', price: 149.99, stock: 20, status: 'AVAILABLE' },
-        { ...sampleProduct, id: 4, name: 'Product 4', price: 199.99, stock: 3, status: 'AVAILABLE' },
-        { ...sampleProduct, id: 5, name: 'Product 5', price: 79.99, stock: 0, status: 'DELETED' },
-    ];
-
+    // Lấy dữ liệu từ API
     useEffect(() => {
-        setProducts(sampleProducts);
+        const fetchProducts = async () => {
+            setLoading(true);  
+            try {
+                const response: any = await api.getAllProducts();
+                setProducts(response?.data || []);
+                console.log(products )
+            } catch (error) {
+                console.error('Failed to fetch products:', error);
+            } finally {
+                setLoading(false); 
+            }
+        };
+        fetchProducts();
     }, []);
 
-    // Redirect to Add Product page
     const handleAddProduct = () => {
-        navigate('/admin/addproduct'); // Using navigate to redirect
+        navigate('/admin/addproduct');
     };
 
-    // Function to get the row index as STT (sequence number)
     const getRowIndex = (index: number) => index + 1;
 
     return (
-        <div className="container-xxl flex-grow-1 container-p-y">
-            <h4 className="py-3 mb-4">
-                <span className="text-muted fw-light">Dashboards /</span> Products
-            </h4>
+        <div className="card">
+            {/* Header */}
+            <div className="flex text-xl mb-5">
+                <div className="text-gray-500 font-light">Dashboards / </div>
+                <label className="ml-1 font-semibold">Product</label>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', fontSize: 'large', marginBottom: '12px' }}>
+                Product
+            </div>
 
-            <div className="card">
-                <div className="d-flex justify-content-between align-items-center">
-                    <h5 className="card-header">Products</h5>
+            {/* Content */}
+            <div style={{ marginBottom: '8px', background: '#fff', paddingTop: '10px' }}>
+                <div className="product mb-5" style={{ display: 'flex', justifyContent: 'end', marginRight: '15px'}}>
                     <Button
                         label="Add Product"
                         icon="pi pi-plus"
                         onClick={handleAddProduct}
-                        className="btn btn-primary"
+                        className="p-button-primary my-btn-custom"
                     />
                 </div>
 
@@ -62,62 +63,50 @@ const AdminProduct: React.FC = () => {
                         paginator
                         rows={5}
                         responsiveLayout="scroll"
+                        loading={loading} 
                         className="row-border hover text-sm"
                     >
-                        {/* Sử dụng getRowIndex để hiển thị STT */}
                         <Column header="STT" body={(rowData, { rowIndex }: any) => getRowIndex(rowIndex)} />
-                        <Column header="Name" body={(rowData: any) => rowData.name} />
-                        <Column header="Price" body={(rowData: any) => `${rowData.price} $`} />
+                        <Column field="name" header="Name" />
                         <Column
-                            header="Images"
-                            body={(rowData: any) => (
-                                <div className="avatar-group d-flex align-items-center">
-                                    <img
-                                        src={rowData.img1}
-                                        alt="Avatar"
-                                        className="rounded-circle avatar-xs"
-                                    />
-                                    <img
-                                        src={rowData.img2}
-                                        alt="Avatar"
-                                        className="rounded-circle avatar-xs"
-                                    />
-                                    <img
-                                        src={rowData.img3}
-                                        alt="Avatar"
-                                        className="rounded-circle avatar-xs"
-                                    />
-                                </div>
+                            field="price"
+                            header="Price"
+                            body={(rowData: IGetProduct) => `${rowData.price.toLocaleString()} $`}
+                        />
+                        <Column
+                            header="Image"
+                            body={(rowData: IGetProduct) => (
+                                <img
+                                    src={rowData.image}
+                                    alt={rowData.name}
+                                    style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                                />
                             )}
                         />
-                        <Column header="Stock" body={(rowData: any) => rowData.stock} />
-                        <Column
+                        <Column field="inventoryStatus" header="Stock" />
+                        {/* <Column
                             header="Status"
-                            body={(rowData: any) => (
+                            body={(rowData: IGetProduct) => (
                                 <span
-                                    className={`badge ${rowData.status === 'AVAILABLE' ? 'bg-success' : 'bg-dark'}`}
+                                    className={`badge ${rowData.inventoryStatus === 'INSTOCK' ? 'bg-success' : 'bg-dark'
+                                        }`}
                                 >
-                                    {rowData.status === 'AVAILABLE' ? 'Available' : 'Deleted'}
+                                    {rowData.inventoryStatus === 'INSTOCK' ? 'In Stock' : 'Out of Stock'}
                                 </span>
                             )}
-                        />
+                        /> */}
                         <Column
                             header="Actions"
-                            body={(rowData: any) => (
+                            body={() => (
                                 <div className="dropdown">
-                                    <ul className="flex flex-row align-items-center">
-                                        <li>
-                                            <Button icon="pi pi-pencil" className="p-button-rounded p-button-info" />
-                                        </li>
-                                        <li>
-                                            <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" />
-                                        </li>
-                                        <li>
-                                            <Button icon="pi pi-info-circle" className="p-button-rounded p-button-secondary" />
-                                        </li>
-                                    </ul>
+                                    <div className="flex flex-row align-items-center gap-1">
+                                        <Button icon="pi pi-pencil" className="p-button-rounded p-button-info" />
+                                        <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" />
+                                        <Button icon="pi pi-info-circle" className="p-button-rounded p-button-secondary" />
+                                    </div>
                                 </div>
                             )}
+                            style={{ display: 'flex', justifyContent: 'center' }}
                         />
                     </DataTable>
                 </div>

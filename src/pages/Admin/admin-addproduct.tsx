@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dropdown } from 'primereact/dropdown';
@@ -6,49 +6,64 @@ import { Button } from 'primereact/button';
 import { Message } from 'primereact/message';
 import { useNavigate } from 'react-router-dom';
 
-// Define interfaces for product and category
-interface Category {
-    id: number;
-    name: string;
-}
+import * as api from '../../api/api';
+import { IGetProduct, IGetCategory } from '../../types/backend';
 
 interface Product {
     name: string;
     description: string;
-    price: number;  // Allow price to be null
-    stoke: number;  // Allow stock to be null
-    categoryId: string | null;
+    price: number;
+    // rating: number;
+    stock: number;
+    categoryId: string;
 }
 
 const AdminAddProduct: React.FC = () => {
-    const [categories] = useState<Category[]>([
-        { id: 1, name: 'Electronics' },
-        { id: 2, name: 'Clothing' },
-        { id: 3, name: 'Home & Kitchen' },
-        { id: 4, name: 'Toys & Games' },
-    ]);
-
+    const [categories, setCategories] = useState<IGetCategory[]>([]);
     const navigate = useNavigate();
 
 
     const [selectedFile1, setSelectedFile1] = useState<File | null>(null);
     const [selectedFile2, setSelectedFile2] = useState<File | null>(null);
     const [selectedFile3, setSelectedFile3] = useState<File | null>(null);
+    const [selectedFile4, setSelectedFile4] = useState<File | null>(null);
+    const [selectedFile5, setSelectedFile5] = useState<File | null>(null);
 
     const [imagePreview1, setImagePreview1] = useState<string | null>(null);
     const [imagePreview2, setImagePreview2] = useState<string | null>(null);
     const [imagePreview3, setImagePreview3] = useState<string | null>(null);
+    const [imagePreview4, setImagePreview4] = useState<string | null>(null);
+    const [imagePreview5, setImagePreview5] = useState<string | null>(null);
 
     const [product, setProduct] = useState<Product>({
         name: '',
         description: '',
-        price: 0,  // Initialize as null
-        stoke: 0,  // Initialize as null
-        categoryId: null,
+        price: 0, 
+        // rating: 0,
+        stock: 0,  
+        categoryId: '',
     });
 
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response: any = await api.getAllCategory();
+                if (response?.data) {
+                    setCategories(response.data);
+                }
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    const handleAddProduct = () => {
+        // navigate('/admin/product');
+    };
+
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const [successMessage, setSuccessMessage] = useState<string>('');
 
     // Handle input change for form fields
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
@@ -60,27 +75,34 @@ const AdminAddProduct: React.FC = () => {
     };
 
     // Handle the form submission
-    const handleSubmit = (e: FormEvent): void => {
+    const handleSubmit = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
         if (product.name && product.price !== null && product.categoryId !== null) {
             console.log('Product Created:', product);
-            setSuccessMessage('Product added successfully!');
+            try { 
+                await api.addToProduct(product)
+                
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
             setErrorMessage('');
             setProduct({
                 name: '',
                 description: '',
                 price: 0,
-                stoke: 0,
-                categoryId: null,
+                // rating: 0,
+                stock: 0,
+                categoryId: '',
             });
             // Reset image previews
             setImagePreview1(null);
             setImagePreview2(null);
             setImagePreview3(null);
+            setImagePreview4(null);
+            setImagePreview5(null);
             navigate('/admin/product');
         } else {
             setErrorMessage('Please fill in all required fields!');
-            setSuccessMessage('');
         }
     };
 
@@ -97,42 +119,48 @@ const AdminAddProduct: React.FC = () => {
                 setSelectedFile3(file);
                 setImagePreview3(URL.createObjectURL(file));
             }
+            else if (index === 4) {
+                setSelectedFile4(file);
+                setImagePreview4(URL.createObjectURL(file));
+            }
+            else if (index === 5) {
+                setSelectedFile5(file);
+                setImagePreview5(URL.createObjectURL(file));
+            }
         }
     };
 
     return (
         <div className="container">
-            <h4>Dashboards / Products - Add</h4>
+            <h3>Dashboards / Products - Add</h3>
 
             <div className="card">
-                <h5 className="card-header">Add Product Form</h5>
+                <h4 className="card-header" style={{ display: 'flex', justifyContent: 'center' }}>Add Product Form</h4>
                 <div className="card-body">
-                    {successMessage && (
-                        <Message severity="success" text={successMessage} />
-                    )}
+
                     {errorMessage && (
                         <Message severity="error" text={errorMessage} />
                     )}
 
+                    <div className="row">
+                        <h5>1. Product Details</h5>
+                        <hr />
+                    </div>
                     <form onSubmit={handleSubmit}>
-                        <div className="row">
-                            <h6>1. Product Details</h6>
-                            <hr />
-                        </div>
 
-                        <div className="col-md-6">
-                            <label>Product Name</label>
+                        <div className="product-name">
+                            <label style={{ width: '110px' }}>Product Name</label>
                             <InputText
                                 id="name"
                                 name="name"
                                 value={product.name}
                                 onChange={handleChange}
-                                className="form-control"
+                                className="form-control ml-3 mb-3"
                             />
                         </div>
 
-                        <div className="col-md-6">
-                            <label>Category</label>
+                        <div className="category flex mb-3">
+                            <label style={{ width: '110px' }} className='mr-3'>Category</label>
                             <Dropdown
                                 id="categoryId"
                                 name="categoryId"
@@ -144,43 +172,53 @@ const AdminAddProduct: React.FC = () => {
                             />
                         </div>
 
-                        <div className="col-md-6">
-                            <label>Price</label>
+                        <div className="price flex">
+                            <label style={{ width: '110px' }}>Price</label>
                             <InputNumber
                                 id="price"
                                 name="price"
-                                value={product.price ?? 0} 
+                                value={product.price ?? 0}
                                 onValueChange={(e) => setProduct({ ...product, price: e.value ?? 0 })}
-                                className="form-control"
+                                className="form-control ml-3 mb-3"
                                 mode="currency"
                                 currency="USD"
                             />
                         </div>
-
-                        <div className="col-md-6">
-                            <label>Stock</label>
+                        {/* <div className="rating flex">
+                            <label style={{ width: '110px' }}>Rating</label>
                             <InputNumber
-                                id="stoke"
-                                name="stoke"
-                                value={product.stoke ?? 0}  
-                                onValueChange={(e) => setProduct({ ...product, stoke: e.value ?? 0 })}
-                                className="form-control"
+                                id="rating"
+                                name="rating"
+                                value={product.price ?? 0}
+                                onValueChange={(e) => setProduct({ ...product, rating: e.value ?? 0 })}
+                                className="form-control ml-3 mb-3"
+                            />
+                        </div> */}
+
+                        <div className="stock flex">
+                            <label style={{ width: '110px' }}>Stock</label>
+                            <InputNumber
+                                id="stock"
+                                name="stock"
+                                value={product.stock}
+                                onValueChange={(e) => setProduct({ ...product, stock: e.value ?? 0 })}
+                                className="form-control ml-3 mb-3"
                             />
                         </div>
 
-                        <div className="col-md-6">
-                            <label>Description</label>
+                        <div className="description flex mb-5">
+                            <label style={{ alignContent: 'center', width: '110px' }}>Description</label>
                             <textarea
                                 id="description"
                                 name="description"
                                 value={product.description}
                                 onChange={handleChange}
-                                className="form-control"
+                                className="form-control ml-3"
                                 rows={3}
                             />
                         </div>
 
-                        <h6>2. Product Images</h6>
+                        <h5 className='mt-3'>2. Product Images</h5>
                         <hr />
 
                         <div className="col-md-6">
@@ -190,7 +228,7 @@ const AdminAddProduct: React.FC = () => {
                                 type="file"
                                 onChange={(e) => handleFileChange(e, 1)}
                                 accept="image/*"
-                                className="form-control"
+                                className="form-control ml-3 mb-3"
                             />
                         </div>
 
@@ -201,7 +239,7 @@ const AdminAddProduct: React.FC = () => {
                                 type="file"
                                 onChange={(e) => handleFileChange(e, 2)}
                                 accept="image/*"
-                                className="form-control"
+                                className="form-control ml-3 mb-3"
                             />
                         </div>
 
@@ -212,7 +250,29 @@ const AdminAddProduct: React.FC = () => {
                                 type="file"
                                 onChange={(e) => handleFileChange(e, 3)}
                                 accept="image/*"
-                                className="form-control"
+                                className="form-control ml-3 mb-3"
+                            />
+                        </div>
+
+                        <div className="col-md-6">
+                            {imagePreview3 && <img src={imagePreview3} style={{ width: '100%', height: '100%' }} />}
+                            <label>Product img4</label>
+                            <input
+                                type="file"
+                                onChange={(e) => handleFileChange(e, 4)}
+                                accept="image/*"
+                                className="form-control ml-3 mb-3"
+                            />
+                        </div>
+
+                        <div className="col-md-6">
+                            {imagePreview3 && <img src={imagePreview3} style={{ width: '100%', height: '100%' }} />}
+                            <label>Product img5</label>
+                            <input
+                                type="file"
+                                onChange={(e) => handleFileChange(e, 5)}
+                                accept="image/*"
+                                className="form-control ml-3 mb-3"
                             />
                         </div>
 
@@ -225,9 +285,10 @@ const AdminAddProduct: React.FC = () => {
                                 onClick={() => setProduct({
                                     name: '',
                                     description: '',
-                                    price: 0, 
-                                    stoke: 0, 
-                                    categoryId: null,
+                                    price: 0,
+                                    // rating: 0,
+                                    stock: 0,
+                                    categoryId: '',
                                 })}
                             />
                         </div>

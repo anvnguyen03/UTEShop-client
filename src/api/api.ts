@@ -33,6 +33,9 @@ export const callRegister = (fullName: string, email: string, password: string) 
 export const getAllCategory = async () => {
     return axios.get<IBackendRes<IGetCategory>>('/api/v1/categories');
 }
+export const addToCategory = async (category: any) => {
+    return axios.post<IBackendRes<any>>(`/api/v1/categories`, { category });
+}
 
 // Product module
 export const getProductsByCategoryName = async (categoryName: string) => {
@@ -45,6 +48,9 @@ export const getAllProducts = async () => {
 
 export const getProduct = async (productId: string) => {
     return axios.get<IBackendRes<IGetOneProduct>>(`/api/v1/products/${productId}`);
+}
+export const addToProduct = async (product: any) => {
+    return axios.post<IBackendRes<any>>(`/api/v1/carts`, {product});
 }
 
 // Cart module
