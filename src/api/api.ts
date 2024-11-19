@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, ICartItem, IGetAccount, IGetAddress, IGetCart, IGetCategory, IGetOneProduct, IGetProduct } from '../types/backend';
+import { IAccount, IBackendRes, ICartItem, IGetAccount, IGetAddress, IGetCart, IGetCategory, IGetOneProduct, IGetProduct, IOrderItem } from '../types/backend';
 import axios from './axios-customize';
 
 export const callLogin = (email: string, password: string) => {
@@ -58,4 +58,13 @@ export const getCarts = async () => {
 
 export const updateCart = async (cartItems: ICartItem[]) => {
     return axios.put<IBackendRes<IGetCart>>("/api/v1/carts/update", cartItems);
+}
+
+// order module
+export const createOrder = async (cartItems: ICartItem[], totalPrice: number) => {
+    return axios.post<IBackendRes<any>>("/api/v1/orders", {cartItems, totalPrice});
+}
+
+export const getOrderItem = async (orderId: string) => {
+    return axios.get<IBackendRes<IOrderItem>>(`/api/v1/orders/items/${orderId}`);
 }

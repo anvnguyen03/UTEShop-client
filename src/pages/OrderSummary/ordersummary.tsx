@@ -12,46 +12,14 @@ import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog'
 import { MenuItem } from 'primereact/menuitem'
 import { Rating } from 'primereact/rating'
 import { InputTextarea } from 'primereact/inputtextarea'
-
-interface OrderItem {
-    id: number
-    productId: number
-    image: string
-    name: string
-    color: string
-    size: string
-    quantity: number
-    price: number
-}
+import { IOrderItem } from '../../types/backend'
+import * as api from '../../api/api';
 
 interface FormReview {
     productId: number
     rate: number | null
     content: string
 }
-
-const mockOrderItems: OrderItem[] = [
-    {
-        id: 101,
-        productId: 123132,
-        image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-1.png',
-        name: 'White long-hand shirt',
-        color: 'Blue',
-        size: 'Medium',
-        quantity: 1,
-        price: 12.0,
-    },
-    {
-        id: 102,
-        productId: 553645,
-        image: 'https://blocks.primereact.org/demo/images/blocks/ecommerce/ordersummary/order-summary-1-2.png',
-        name: 'Jackie Chan',
-        color: 'Yellow',
-        size: 'Large',
-        quantity: 1,
-        price: 24.0,
-    }
-]
 
 const OrderSummary: React.FC = () => {
 
@@ -61,8 +29,36 @@ const OrderSummary: React.FC = () => {
     const [isCancelDisabled, setCancelDisabled] = useState(false)
 
     const [isOrderCanceled, setOrderCanceled] = useState(false)
-    const [selectedItem, setSelectedItem] = useState<OrderItem>()
+    const [selectedItem, setSelectedItem] = useState<IOrderItem>()
     const [formReview, setFormReview] = useState<FormReview>({ productId: 0, content: 'Excellent', rate: 1 })
+    const [orderItems, setOrderItems] = useState<IOrderItem[]>([]);
+    const [price, setPrice] = useState(0);
+    const [discount, setDiscount] = useState(0);
+    const [total, setTotal] = useState(0);
+    const [orderNumber, setOrderNumber] = useState("");
+
+    useEffect(() => {
+        const getOrderItems = async() => {
+            const orderId = localStorage.getItem("orderId");
+            if(orderId){
+                const response:any = await api.getOrderItem(orderId);
+                if(response?.data) {
+                    setOrderItems(response.data);
+                }
+            }   
+        }
+        getOrderItems();
+    }, []);
+
+    useEffect(() => {
+        setPrice(orderItems.reduce((acc, item) => acc + item.price * item.quantity, 0));
+        setDiscount(12);
+        const calculatedTotal = price - discount;
+        setTotal(calculatedTotal);
+        console.log(orderItems.length);
+        const ordNum = localStorage.getItem("orderId") || "0";
+        setOrderNumber(ordNum);
+    }, [orderItems, price])
 
     const acceptCancelOrder = () => {
         setLoading(true)
@@ -114,10 +110,6 @@ const OrderSummary: React.FC = () => {
         }
     ]
 
-    const price = mockOrderItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
-    const discount = 12
-    const total = price - discount
-
     const showSuccess = () => {
         toast.current!.show({
             severity: 'success',
@@ -127,7 +119,7 @@ const OrderSummary: React.FC = () => {
         })
     }
 
-    const handleReviewClick = (orderItem: OrderItem) => {
+    const handleReviewClick = (orderItem: IOrderItem) => {
         setSelectedItem(orderItem)
         setFormReview({ productId: orderItem.productId, content: 'Excellent', rate: 1 })
         confirmDialog({
@@ -187,7 +179,7 @@ const OrderSummary: React.FC = () => {
                 <div className="flex flex-column sm:flex-row sm:align-items-center sm:justify-content-between py-5">
                     <div className="mb-3 sm:mb-0">
                         <span className="font-medium text-xl text-900 mr-2">Order number:</span>
-                        <span className="font-medium text-xl text-blue-500">451234</span>
+                        <span className="font-medium text-xl text-blue-500">{orderNumber}</span>
                     </div>
                     <ConfirmDialog />
                     <div>
@@ -205,7 +197,7 @@ const OrderSummary: React.FC = () => {
 
                 <div className="border-round surface-border border-1">
                     <ul className="list-none p-0 m-0">
-                        {mockOrderItems.map((item) => (
+                        {orderItems.map((item) => (
                             <li
                                 key={item.id}
                                 className="p-3 border-bottom-1 surface-border flex align-items-start sm:align-items-center"
@@ -217,7 +209,6 @@ const OrderSummary: React.FC = () => {
                                 />
                                 <div className="flex flex-column">
                                     <span className="text-900 font-medium text-xl mb-2">{item.name}</span>
-                                    <span className="text-600 mb-3">{`${item.color} | ${item.size}`}</span>
                                     <span className="text-900 font-medium">Quantity {item.quantity}</span>
                                     <span className="text-900 font-medium text-lg align-content-center">
                                         ${item.price.toFixed(2)}

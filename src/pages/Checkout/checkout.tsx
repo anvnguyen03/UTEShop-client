@@ -21,12 +21,16 @@ const CheckoutForm: React.FC = () => {
     const [price, setPrice] = useState(0);
     const [address, setAddress] = useState<IGetAddress>();
 
-    const handlePlaceOrder = () => {
-        setLoading(true)
-        setTimeout(() => {
-            setLoading(false)
-            navigate('/ordersummary', { state: { showSuccess: true } })
-        }, 2000)
+    const handlePlaceOrder = async() => {
+        const placeOrder = async () => {
+            const response: any = await api.createOrder(cartItems, total);
+            if (response?.data) {
+                console.log(response.data);
+                localStorage.setItem("orderId", response.data._id);
+                navigate('/ordersummary', { state: { showSuccess: true } })
+            }   
+        }
+        placeOrder();
     }
 
     useEffect(() => {

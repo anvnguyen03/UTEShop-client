@@ -69,3 +69,14 @@ export type ICartItem = {
 export type IGetCart = {
     cartItems: ICartItem[],
 }
+
+export type IOrderItem = {
+    id: number
+    productId: number
+    image: string
+    name: string
+    color: string
+    size: string
+    quantity: number
+    price: number
+}
