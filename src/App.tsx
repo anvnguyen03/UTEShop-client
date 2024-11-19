@@ -25,6 +25,7 @@ import AdminUser from './pages/Admin/admin-user'
 import AdminRevenue from './pages/Admin/admin-revenue'
 import AdminOrder from './pages/Admin/admin-order'
 import AdminCoupon from './pages/Admin/admin-coupon'
+import AdminAddProduct from './pages/Admin/admin-addproduct'
 
 function App() {
   const dispatch = useAppDispatch();
@@ -67,6 +68,7 @@ function App() {
           <Route path="/admin" element={<AdminLayoutComponent />}>
             <Route path="category" element={<AdminCategory />} />
             <Route path="product" element={<AdminProduct />} />
+            <Route path="addproduct" element={<AdminAddProduct />} />
             <Route path="user" element={<AdminUser />} />
             <Route path="revenue" element={<AdminRevenue />} />
             <Route path="order" element={<AdminOrder />} />
