@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import LoginPage from './pages/Login/login'
 import { useAppDispatch, useAppSelector } from './redux/hooks'
 import { fetchAccount } from './redux/slice/accountSlide'
@@ -26,10 +26,17 @@ import AdminRevenue from './pages/Admin/admin-revenue'
 import AdminOrder from './pages/Admin/admin-order'
 import AdminCoupon from './pages/Admin/admin-coupon'
 import AdminAddProduct from './pages/Admin/admin-addproduct'
+import useWebSocket from './hooks/useWebSocket'
+import { Toast } from 'primereact/toast';
 
 function App() {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector(state => state.account.isLoading);
+  const [popupMessage, setPopupMessage] = useState('');
+  const toast = useRef<Toast>(null);
+
+  // WebSocket hook
+  const { message } = useWebSocket(`ws://localhost:8080?email=${localStorage.getItem("email")}`);
 
   useEffect(() => {
     // if (
@@ -39,7 +46,22 @@ function App() {
     //   return;
     // }    
     dispatch(fetchAccount())
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    
+    console.log("Message: " + message);
+    if (message) {
+      const parsedMessage = JSON.parse(message);
+      setPopupMessage(parsedMessage.payload);
+      toast.current?.show({
+        severity: 'info',
+        summary: `${parsedMessage.type}`,
+        detail: message,
+        life: 5000,   //5s
+      });
+    }
+  }, [message]);
 
   return (
     <BrowserRouter>
@@ -75,6 +97,7 @@ function App() {
             <Route path="coupon" element={<AdminCoupon />} />
           </Route>
         </Routes>
+        <Toast ref={toast} />
       </SearchProvider>
     </BrowserRouter>
   )
