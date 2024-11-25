@@ -74,6 +74,7 @@ const LoginPage: React.FC = () => {
         if (res) {
             if (res.data) {
                 localStorage.setItem('access_token', res.data.accessToken);
+                localStorage.setItem('email', res.data.user.email);
                 dispatch(setUserLoginInfo(res.data.user))
                 console.log(res);
                 // message.success('Đăng nhập tài khoản thành công!');

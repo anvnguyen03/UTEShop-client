@@ -19,7 +19,7 @@ export interface IAccount {
 export interface IGetAccount {
     email: string;
     fullName: string;
-    address: string;
+    address: IGetAddress;
     role: string;
 }
 
@@ -31,6 +31,7 @@ export interface IGetAddress {
 }
 
 export interface IGetCategory {
+    _id:string ;
     name: string;
 }
 
@@ -40,6 +41,7 @@ export interface IGetProduct {
     description: string,
     name: string,
     image: string,
+    images: string[]; 
     price: number,
     inventoryStatus: string,
     rating: number;
