@@ -82,3 +82,16 @@ export type IOrderItem = {
     quantity: number
     price: number
 }
+
+export type IGetOrderHistory = {
+    orderNumber: string
+    orderDate: string
+    totalAmount: string
+    status: string
+    items: {
+        image: any
+        name: any
+        price: number,
+        quantity: number
+    }[]
+}
