@@ -7,6 +7,7 @@ import 'primeicons/primeicons.css'
 import WebLayout from '../../components/Layout/WebLayout'
 import { useNavigate } from 'react-router-dom'
 import { InputText } from 'primereact/inputtext'
+import { useLocation } from 'react-router-dom'
 import * as api from '../../api/api';
 import { ICartItem, IGetAddress } from '../../types/backend'
 import useWebSocket from '../../hooks/useWebSocket'
@@ -14,17 +15,17 @@ import useWebSocket from '../../hooks/useWebSocket'
 const CheckoutForm: React.FC = () => {
 
     const navigate = useNavigate()
-    const [loading, setLoading] = useState(false)
-    const [cartItems, setCartItems] = useState<ICartItem[]>([]);
-    const [total, setTotal] = useState(0);
-    const [subtotal, setSubtotal] = useState(0);
+    const location = useLocation();
+    const { selectedCartItems, total, subtotal } = location.state || {};
+    const [loading, setLoading] = useState(false);
+    const [totalCheckout, setTotalCheckout] = useState(total)
     const [discount, setDiscount] = useState(0);
     const [price, setPrice] = useState(0);
     const [address, setAddress] = useState<IGetAddress>();
 
     const handlePlaceOrder = async() => {
         const placeOrder = async () => {
-            const response: any = await api.createOrder(cartItems, total);
+            const response: any = await api.createOrder(selectedCartItems, totalCheckout);
             if (response?.data) {
                 console.log(response.data);
                 localStorage.setItem("orderId", response.data._id);
@@ -35,16 +36,7 @@ const CheckoutForm: React.FC = () => {
     }
 
     useEffect(() => {
-        console.log(cartItems.length);
-        const getCarts = async() => {
-            const response: any = await api.getCarts();
-            if (response?.data) {
-                setCartItems(response.data.cartItems);
-                setSubtotal(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)); 
-                setTotal(subtotal);
-            }
-        }
-        getCarts();
+        console.log(selectedCartItems.length);
         const getAddress = async() => {
             const response: any = await api.callFetchAddress();
             if (response?.data) {
@@ -55,10 +47,10 @@ const CheckoutForm: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        setPrice(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0));
+        setPrice(selectedCartItems.reduce((acc: any, item: any) => acc + item.price * item.quantity, 0));
         setDiscount(12);
         const calculatedTotal = price - discount;
-        setTotal(calculatedTotal);
+        setTotalCheckout(calculatedTotal);
     })
 
     return (
@@ -146,7 +138,7 @@ const CheckoutForm: React.FC = () => {
                                         <span className="text-900 text-xl block ml-2">Cart</span>
                                     </div>
                                     {/* item */}
-                                    {cartItems.map((item, index) => (
+                                    {selectedCartItems.map((item: any, index: any) => (
                                         <div key={index}>
                                             <div className="p-2 flex flex-column lg:flex-row flex-wrap lg:align-items-center">
                                                 <img
@@ -267,7 +259,7 @@ const CheckoutForm: React.FC = () => {
                             <div className="border-bottom-1 surface-border my-3 py-2">
                                 <div className="flex justify-content-between mb-3">
                                     <span className="text-900 font-medium">Total</span>
-                                    <span className="text-900 font-bold">${total}</span>
+                                    <span className="text-900 font-bold">${totalCheckout}</span>
                                 </div>
                             </div>
                             <Button
