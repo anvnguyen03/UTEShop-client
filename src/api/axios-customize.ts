@@ -6,7 +6,7 @@ import type { AxiosRequestConfig } from "axios";
  */
 
 const instance = axiosClient.create({
-    baseURL: "http://localhost:6969",
+    baseURL: "http://localhost:8080",
     // withCredentials: true
 });
 
