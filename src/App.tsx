@@ -20,14 +20,15 @@ import OrderHistory from './pages/OrderHistory/orderhistory'
 import WishList from './pages/Wishlist/wishlist'
 import AdminLayoutComponent from './pages/Admin/admin'
 import AdminCategory from './pages/Admin/admin-category'
-import AdminProduct from './pages/Admin/admin-product'
+import AdminProduct from './pages/Admin/product/admin-product'
 import AdminUser from './pages/Admin/admin-user'
 import AdminRevenue from './pages/Admin/admin-revenue'
 import AdminOrder from './pages/Admin/admin-order'
 import AdminCoupon from './pages/Admin/admin-coupon'
-import AdminAddProduct from './pages/Admin/admin-addproduct'
+import AdminAddProduct from './pages/Admin/product/admin-addproduct'
 import useWebSocket from './hooks/useWebSocket'
 import { Toast } from 'primereact/toast';
+import EditProductPage from './pages/Admin/product/admin-editproduct'
 
 function App() {
   const dispatch = useAppDispatch();
@@ -79,11 +80,11 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* <Route element={ <ProtectedRoute allowedRoles={['customer, admin']}/> }> */}
-            <Route path='/cart' element={<CartPage/>}/>
-            <Route path='/checkout' element={<CheckoutForm/>} />
-            <Route path='/ordersummary' element={<OrderSummary/>} />
-            <Route path='/orderhistory' element={<OrderHistory/>} />
-            <Route path='/wishlist' element={<WishList/>} />
+          <Route path='/cart' element={<CartPage />} />
+          <Route path='/checkout' element={<CheckoutForm />} />
+          <Route path='/ordersummary' element={<OrderSummary />} />
+          <Route path='/orderhistory' element={<OrderHistory />} />
+          <Route path='/wishlist' element={<WishList />} />
           {/* </Route> */}
 
           {/* Admin Routes */}
@@ -91,6 +92,7 @@ function App() {
             <Route path="category" element={<AdminCategory />} />
             <Route path="product" element={<AdminProduct />} />
             <Route path="addproduct" element={<AdminAddProduct />} />
+            <Route path="/admin/editproduct/:id" element={<EditProductPage />} />
             <Route path="user" element={<AdminUser />} />
             <Route path="revenue" element={<AdminRevenue />} />
             <Route path="order" element={<AdminOrder />} />

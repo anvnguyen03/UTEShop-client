@@ -8,6 +8,12 @@ export const callLogin = (email: string, password: string) => {
 export const callFetchAccount = () => {
     return axios.get<IBackendRes<IGetAccount>>('/api/v1/auth/account')
 }
+export const updateUser = (data: any) => {
+    return axios.put<IBackendRes<any>>('/api/v1/users', data);
+};
+export const callFetchAllUsers = () => {
+    return axios.get<IBackendRes<IGetAccount[]>>('/api/v1/users/users');
+};
 
 export const callFetchAddress = () => {
     return axios.get<IBackendRes<IGetAddress>>('/api/v1/users');
@@ -33,8 +39,14 @@ export const callRegister = (fullName: string, email: string, password: string) 
 export const getAllCategory = async () => {
     return axios.get<IBackendRes<IGetCategory>>('/api/v1/categories');
 }
-export const addToCategory = async (category: any) => {
+export const addToCategory = async (category: IGetCategory) => {
     return axios.post<IBackendRes<any>>(`/api/v1/categories`, { category });
+}
+export const deleteCategory = async (categoryId: string) => {
+    return axios.delete<IBackendRes<any>>(`/api/v1/categories/${categoryId}`);
+};
+export const updateCategory = async (categoryId: string, category: any) => {
+    return axios.put<IBackendRes<any>>(`/api/v1/categories/${categoryId}`, { category });
 }
 
 // Product module
@@ -48,6 +60,16 @@ export const getAllProducts = async () => {
 
 export const getProduct = async (productId: string) => {
     return axios.get<IBackendRes<IGetOneProduct>>(`/api/v1/products/${productId}`);
+}
+export const deleteProduct = async (id: string) => {
+    return axios.delete<IBackendRes<any>>(`/api/v1/products/${id}`);
+};
+export const editProduct = async (id: string, product: Partial<IGetProduct>) => {
+    return axios.put<IBackendRes<any>>(`/api/v1/products/${id}`, product);
+};
+
+export const addProduct = async (product: any) => {
+    return axios.post<IBackendRes<any>>(`/api/v1/products`,  product );
 }
 export const addToProduct = async (product: any) => {
     return axios.post<IBackendRes<any>>(`/api/v1/carts`, {product});
@@ -70,7 +92,13 @@ export const updateCart = async (cartItems: ICartItem[]) => {
 export const createOrder = async (cartItems: ICartItem[], totalPrice: number) => {
     return axios.post<IBackendRes<any>>("/api/v1/orders", {cartItems, totalPrice});
 }
+export const getAllOrders = () => {
+    return axios.get<IBackendRes<any>>('/api/v1/orders');
+};
 
 export const getOrderItem = async (orderId: string) => {
     return axios.get<IBackendRes<IOrderItem>>(`/api/v1/orders/items/${orderId}`);
+}
+export const getOrderHistory = async () => {
+    return axios.get<IBackendRes<IOrderItem>>(`/api/v1/orders/history`);
 }

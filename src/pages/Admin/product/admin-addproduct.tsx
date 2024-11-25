@@ -6,8 +6,8 @@ import { Button } from 'primereact/button';
 import { Message } from 'primereact/message';
 import { useNavigate } from 'react-router-dom';
 
-import * as api from '../../api/api';
-import { IGetProduct, IGetCategory } from '../../types/backend';
+import * as api from '../../../api/api';
+import { IGetProduct, IGetCategory } from '../../../types/backend';
 
 interface Product {
     name: string;
@@ -38,9 +38,9 @@ const AdminAddProduct: React.FC = () => {
     const [product, setProduct] = useState<Product>({
         name: '',
         description: '',
-        price: 0, 
+        price: 0,
         // rating: 0,
-        stock: 0,  
+        stock: 0,
         categoryId: '',
     });
 
@@ -59,9 +59,6 @@ const AdminAddProduct: React.FC = () => {
         fetchCategories();
     }, []);
 
-    const handleAddProduct = () => {
-        // navigate('/admin/product');
-    };
 
     const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -79,9 +76,10 @@ const AdminAddProduct: React.FC = () => {
         e.preventDefault();
         if (product.name && product.price !== null && product.categoryId !== null) {
             console.log('Product Created:', product);
-            try { 
-                await api.addToProduct(product)
-                
+            try {
+                await api.addProduct(product)
+
+
             } catch (error) {
                 console.error("Error fetching categories:", error);
             }
@@ -100,7 +98,7 @@ const AdminAddProduct: React.FC = () => {
             setImagePreview3(null);
             setImagePreview4(null);
             setImagePreview5(null);
-            navigate('/admin/product');
+            // navigate('/admin/product');
         } else {
             setErrorMessage('Please fill in all required fields!');
         }
@@ -168,6 +166,7 @@ const AdminAddProduct: React.FC = () => {
                                 options={categories}
                                 onChange={(e) => setProduct({ ...product, categoryId: e.value })}
                                 optionLabel="name"
+                                optionValue="_id" // Lấy `_id` làm giá trị thực khi chọn
                                 placeholder="Select a Category"
                             />
                         </div>
@@ -255,7 +254,7 @@ const AdminAddProduct: React.FC = () => {
                         </div>
 
                         <div className="col-md-6">
-                            {imagePreview3 && <img src={imagePreview3} style={{ width: '100%', height: '100%' }} />}
+                            {imagePreview4 && <img src={imagePreview4} style={{ width: '100%', height: '100%' }} />}
                             <label>Product img4</label>
                             <input
                                 type="file"
@@ -266,7 +265,7 @@ const AdminAddProduct: React.FC = () => {
                         </div>
 
                         <div className="col-md-6">
-                            {imagePreview3 && <img src={imagePreview3} style={{ width: '100%', height: '100%' }} />}
+                            {imagePreview5 && <img src={imagePreview5} style={{ width: '100%', height: '100%' }} />}
                             <label>Product img5</label>
                             <input
                                 type="file"

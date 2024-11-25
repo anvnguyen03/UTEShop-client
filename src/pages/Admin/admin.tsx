@@ -70,7 +70,8 @@ const AdminLayoutComponent: React.FC = () => {
                         model={[
                             {
                                 label: 'Home',
-                                icon: 'pi pi-home'
+                                icon: 'pi pi-home',
+                                command: () => navigate('/home'), 
                             },
                         ]}
                         end={<div className="flex align-items-center gap-2">
