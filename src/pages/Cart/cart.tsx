@@ -13,6 +13,7 @@ import { ICartItem } from '../../types/backend';
 const CartPage: React.FC = () => {
     const navigate = useNavigate()
     const [cartItems, setCartItems] = useState<ICartItem[]>([]);
+    const [selectedCartItems, setSelectedCartItems] = useState<ICartItem[]>([]);
     const [total, setTotal] = useState(0);
     const [subtotal, setSubtotal] = useState(0);
 
@@ -22,8 +23,6 @@ const CartPage: React.FC = () => {
             const response: any = await api.getCarts();
             if (response?.data) {
                 setCartItems(response.data.cartItems);
-                setSubtotal(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)); 
-                setTotal(subtotal);
             }
         }
         getCarts();
@@ -32,10 +31,17 @@ const CartPage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const calculatedSubtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-        setSubtotal(calculatedSubtotal);
-        setTotal(calculatedSubtotal);
-    }, [cartItems]);
+        console.log("Hello: " + selectedCartItems);
+        if(selectedCartItems.length > 0) {
+            const calculatedSubtotal = selectedCartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+            setSubtotal(calculatedSubtotal);
+            setTotal(calculatedSubtotal);
+        } else {
+            setSubtotal(0);
+            setTotal(0);
+        }
+        
+    }, [selectedCartItems, cartItems]);
 
     const handleQuantityChange = (e: InputNumberValueChangeEvent, itemId: string) => {
         const updatedCart = cartItems.map((item) =>
@@ -47,10 +53,28 @@ const CartPage: React.FC = () => {
     }
 
     const handleRemove = (itemId: string) => {
-        const updatedCart = cartItems.filter((item) => item.id !== itemId);
-        setCartItems(updatedCart);
-        setSubtotal(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)); 
-        setTotal(subtotal);
+        const updatedCartItems = cartItems.filter((cartItem) => cartItem.id !== itemId);
+        const updatedSelectedCartItems = selectedCartItems.filter((cartItem) => cartItem.id !== itemId);
+        setCartItems(updatedCartItems);
+        setSelectedCartItems(updatedSelectedCartItems);
+        const updateCart = async() => {
+            const response: any = await api.updateCart(updatedCartItems);
+            if (response?.data) {
+                console.log(response.data);
+            }   
+        }
+        updateCart();
+    }
+
+    const handleCheckItem = (e: React.ChangeEvent<HTMLInputElement>, itemId: string, item: ICartItem) => {
+        let updatedCartItems;
+        if(e.target.checked) {
+            updatedCartItems = [...selectedCartItems, item];
+            setSelectedCartItems(updatedCartItems);
+        } else {
+            updatedCartItems = selectedCartItems.filter((cartItem) => cartItem.id !== itemId);
+            setSelectedCartItems(updatedCartItems);
+        }
     }
 
     const handleCheckout = async () => {
@@ -60,7 +84,7 @@ const CartPage: React.FC = () => {
             if (response?.data) {
                 console.log(response.data);
                 // navigate to checkout
-                navigate('/checkout');
+                navigate('/checkout', { state: { selectedCartItems, total, subtotal } });
             }   
         }
         updateCart();
@@ -96,7 +120,6 @@ const CartPage: React.FC = () => {
                                         <span className="text-900 text-xl font-medium mb-3">
                                             {item.name}
                                         </span>
-                                        <span className="text-600">{item.size} | {item.color}</span>
                                     </div>
 
                                     <div className="w-full sm:w-6 flex align-items-start justify-content-end mt-3 sm:mt-0">
@@ -110,6 +133,7 @@ const CartPage: React.FC = () => {
                                             >
                                                 Remove
                                             </a>
+                                            <input type="checkbox" value={item.id} onChange={(e) => handleCheckItem(e, item.id, item)} />
                                         </div>
                                     </div>
                                 </div>

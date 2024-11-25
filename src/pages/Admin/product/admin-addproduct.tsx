@@ -77,28 +77,46 @@ const AdminAddProduct: React.FC = () => {
         if (product.name && product.price !== null && product.categoryId !== null) {
             console.log('Product Created:', product);
             try {
-                await api.addProduct(product)
+                const formData = new FormData();
+            
+                // Thêm dữ liệu sản phẩm vào FormData
+                formData.append('name', product.name);
+                formData.append('description', product.description);
+                formData.append('price', product.price.toString());
+                formData.append('stock', product.stock.toString());
+                formData.append('categoryId', product.categoryId);
 
+                // Thêm file ảnh vào FormData
+                if (selectedFile1) formData.append('images', selectedFile1);
+                if (selectedFile2) formData.append('images', selectedFile2);
+                if (selectedFile3) formData.append('images', selectedFile3);
+                if (selectedFile4) formData.append('images', selectedFile4);
+                if (selectedFile5) formData.append('images', selectedFile5);
+
+                // Gửi dữ liệu lên API
+                await api.addProduct(formData);
+
+                setErrorMessage('');
+                setProduct({
+                    name: '',
+                    description: '',
+                    price: 0,
+                    stock: 0,
+                    categoryId: '',
+                });
+
+                // Reset image previews
+                setImagePreview1(null);
+                setImagePreview2(null);
+                setImagePreview3(null);
+                setImagePreview4(null);
+                setImagePreview5(null);
+
+                // navigate('/admin/product');
 
             } catch (error) {
                 console.error("Error fetching categories:", error);
             }
-            setErrorMessage('');
-            setProduct({
-                name: '',
-                description: '',
-                price: 0,
-                // rating: 0,
-                stock: 0,
-                categoryId: '',
-            });
-            // Reset image previews
-            setImagePreview1(null);
-            setImagePreview2(null);
-            setImagePreview3(null);
-            setImagePreview4(null);
-            setImagePreview5(null);
-            // navigate('/admin/product');
         } else {
             setErrorMessage('Please fill in all required fields!');
         }

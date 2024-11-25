@@ -69,7 +69,11 @@ export const editProduct = async (id: string, product: Partial<IGetProduct>) => 
 };
 
 export const addProduct = async (product: any) => {
-    return axios.post<IBackendRes<any>>(`/api/v1/products`,  product );
+    return axios.post<IBackendRes<any>>(`/api/v1/products`,  product, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    } );
 }
 export const addToProduct = async (product: any) => {
     return axios.post<IBackendRes<any>>(`/api/v1/carts`, {product});
