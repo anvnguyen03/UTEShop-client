@@ -95,3 +95,9 @@ export type IGetOrderHistory = {
         quantity: number
     }[]
 }
+
+export type ICoupon = {
+    name: string,
+    price: number
+    isActivated: boolean
+}

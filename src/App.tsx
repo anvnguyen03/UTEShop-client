@@ -23,7 +23,7 @@ import AdminCategory from './pages/Admin/admin-category'
 import AdminProduct from './pages/Admin/product/admin-product'
 import AdminUser from './pages/Admin/admin-user'
 import AdminRevenue from './pages/Admin/admin-revenue'
-import AdminOrder from './pages/Admin/admin-order'
+import AdminOrder from './pages/Admin/order/admin-order'
 import AdminCoupon from './pages/Admin/admin-coupon'
 import AdminAddProduct from './pages/Admin/product/admin-addproduct'
 import useWebSocket from './hooks/useWebSocket'
@@ -58,8 +58,8 @@ function App() {
       toast.current?.show({
         severity: 'info',
         summary: `${parsedMessage.type}`,
-        detail: message,
-        life: 5000,   //5s
+        detail: parsedMessage.payload,
+        sticky: true
       });
     }
   }, [message]);

@@ -39,7 +39,7 @@ const AdminLayoutComponent: React.FC = () => {
     );
     const items = [
         {
-            label: 'Dashboard',
+            label: 'Quản lý chung',
             icon: 'pi pi-fw pi-home',
             template: itemRenderer,
             items: [
@@ -54,7 +54,7 @@ const AdminLayoutComponent: React.FC = () => {
     ];
 
     return (
-        <div className="flex h-screen p-2" style={{ background: '#f5f5f9' }}>
+        <div className="flex h-full p-2" style={{ background: '#f5f5f9' }}>
             {/* Sidebar */}
             <div className="h-screen mr-3 bg-white" style={{ width: '300px' }}>
                 <div className="m-3">

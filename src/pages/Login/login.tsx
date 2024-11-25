@@ -25,6 +25,7 @@ const LoginPage: React.FC = () => {
     const [isValidForm, setValidForm] = useState(false);
     const dispatch = useDispatch();
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
+    const role = useAppSelector(state => state.account.user.role)
     // let location = useLocation();
     // let params = new URLSearchParams(location.search);
     // const callback = params?.get("callback");
@@ -33,14 +34,12 @@ const LoginPage: React.FC = () => {
 
 
     useEffect(() => {
-        //đã login => redirect to '/'
-        // if(localStorage.getItem("access_token")) {
-        //     window.location.href = '/';
-        // }
         if (isAuthenticated) {
-            // navigate('/');
-            console.log("Authenticated");
-            window.location.href = '/';
+            if (role === 'admin') {
+                window.location.href = '/admin'
+            } else {
+                window.location.href = '/'
+            }
         }
     }, [isAuthenticated])
 
@@ -104,12 +103,12 @@ const LoginPage: React.FC = () => {
     return (
         <div className="px-5 min-h-screen flex justify-content-center align-items-center">
             <form onSubmit={handleSubmit} className="border-1 surface-border surface-card border-round py-7 px-4 md:px-7 z-1">
-            <div className="text-center mb-5">
-                <Link to={"/home"}><img src={appLogo} alt="ute-shop" height={50} className="mb-3" /></Link>
-                <div className="text-900 text-3xl font-medium mb-3">Chào mừng quý khách</div>
-                <span className="text-600 font-medium line-height-3">Bạn chưa có tài khoản ?</span>
-                <Link to="/register" className="font-medium no-underline ml-2 text-blue-500 cursor-pointer">Tạo ngay!</Link>
-            </div>
+                <div className="text-center mb-5">
+                    <Link to={"/home"}><img src={appLogo} alt="ute-shop" height={50} className="mb-3" /></Link>
+                    <div className="text-900 text-3xl font-medium mb-3">Chào mừng quý khách</div>
+                    <span className="text-600 font-medium line-height-3">Bạn chưa có tài khoản ?</span>
+                    <Link to="/register" className="font-medium no-underline ml-2 text-blue-500 cursor-pointer">Tạo ngay!</Link>
+                </div>
                 {/* Email field */}
                 <FloatLabel className="field">
                     <InputText style={{ width: '278px' }}
@@ -145,14 +144,14 @@ const LoginPage: React.FC = () => {
                 <div className="flex align-items-center justify-content-between field">
                     <a className="font-medium no-underline text-blue-500 text-right cursor-pointer"
                         onClick={handleForgotPassword}>
-                            Bạn quên mật khẩu à?
+                        Bạn quên mật khẩu à?
                     </a>
                 </div>
                 <div>
                     {
                         isValidForm ? (
-                            <Button label="Đăng nhập" icon="pi pi-sign-in" type="submit" className="field"/>
-                        ) : (<Button label="Đăng nhập" icon="pi pi-sign-in" type="submit" className="field" disabled/>)
+                            <Button label="Đăng nhập" icon="pi pi-sign-in" type="submit" className="field" />
+                        ) : (<Button label="Đăng nhập" icon="pi pi-sign-in" type="submit" className="field" disabled />)
 
                     }
                 </div>

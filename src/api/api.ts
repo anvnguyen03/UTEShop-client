@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, ICartItem, IGetAccount, IGetAddress, IGetCart, IGetCategory, IGetOneProduct, IGetOrderHistory, IGetProduct, IOrderItem } from '../types/backend';
+import { IAccount, IBackendRes, ICartItem, ICoupon, IGetAccount, IGetAddress, IGetCart, IGetCategory, IGetOneProduct, IGetOrderHistory, IGetProduct, IOrderItem } from '../types/backend';
 import axios from './axios-customize';
 
 export const callLogin = (email: string, password: string) => {
@@ -94,7 +94,7 @@ export const createOrder = async (cartItems: ICartItem[], totalPrice: number) =>
 }
 export const getAllOrders = () => {
     return axios.get<IBackendRes<any>>('/api/v1/orders');
-};
+}
 
 export const getOrderItem = async (orderId: string) => {
     return axios.get<IBackendRes<IOrderItem>>(`/api/v1/orders/items/${orderId}`);
@@ -106,4 +106,30 @@ export const getOrderHistory = async () => {
 
 export const getOrder = async (orderId: string) => {
     return axios.get<IBackendRes<IGetOrderHistory>>(`/api/v1/orders/${orderId}`);
+}
+
+export const changeOrderStatus = async (orderId: string, status: string) => {
+    return axios.post<IBackendRes<any>>('/api/v1/orders/update/status', {orderId, status})
+}
+
+export const getRevenueStatistics = async () => {
+    return axios.get<IBackendRes<any>>('/api/v1/orders/revenue-statistics')
+}
+
+// coupon module
+export const getCoupons = async () => {
+    return axios.get<IBackendRes<ICoupon[]>>('/api/v1/coupons')
+}
+
+export const addCoupon = async (coupon: ICoupon) => {
+    return axios.post<IBackendRes<ICoupon[]>>('/api/v1/coupons', coupon)
+}
+
+// admin module
+export const getUsersStatistics = async (currentYear: number) => {
+    return axios.post<IBackendRes<any>>('/api/v1/admin/users/statistics', {currentYear})
+}
+
+export const getGeneralStatistics = async () => {
+    return axios.get<IBackendRes<any>>('/api/v1/admin/general-statistics')
 }
