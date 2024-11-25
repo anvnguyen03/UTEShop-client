@@ -27,7 +27,7 @@ const CheckoutForm: React.FC = () => {
             if (response?.data) {
                 console.log(response.data);
                 localStorage.setItem("orderId", response.data._id);
-                navigate('/ordersummary', { state: { showSuccess: true } })
+                navigate(`/ordersummary?id=${response.data._id}`, { state: { showSuccess: true } })
             }   
         }
         placeOrder();
@@ -111,22 +111,7 @@ const CheckoutForm: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <div className="col p-3">
-                                            <div className="flex flex-column border-round border-1 surface-border p-4 cursor-pointer hover:border-primary transition-duration-150">
-                                                <div className="flex justify-content-between mb-3">
-                                                    <span className="text-900 text-xl font-medium">Office</span>
-                                                    <span className="text-600 font-medium">
-                                                        <i className="pi pi-pencil mr-2" /> Edit
-                                                    </span>
-                                                </div>
-                                                <span className="inline-block text-600 mb-3">
-                                                    Jacob Obrechtstraat 5, 1072 KC Amsterdam The Netherlands
-                                                </span>
-                                                <span className="inline-block text-600">
-                                                    <i className="pi pi-mobile mr-2" /> +123456789
-                                                </span>
-                                            </div>
-                                        </div>
+                                        
 
                                         <div className="col p-3">
                                             <div className="flex h-full flex-column justify-content-center align-items-center text-center py-5 border-round border-1 surface-border surface-100 cursor-pointer hover:border-primary transition-duration-150">

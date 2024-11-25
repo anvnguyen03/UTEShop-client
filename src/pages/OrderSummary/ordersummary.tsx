@@ -6,13 +6,13 @@ import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
 import WebLayout from '../../components/Layout/WebLayout'
 import { Steps } from 'primereact/steps'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { Toast } from 'primereact/toast'
 import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog'
 import { MenuItem } from 'primereact/menuitem'
 import { Rating } from 'primereact/rating'
 import { InputTextarea } from 'primereact/inputtextarea'
-import { IOrderItem } from '../../types/backend'
+import { IGetOrderHistory, IOrderItem } from '../../types/backend'
 import * as api from '../../api/api';
 
 interface FormReview {
@@ -24,41 +24,65 @@ interface FormReview {
 const OrderSummary: React.FC = () => {
 
     const location = useLocation()
+    const [searchParams] = useSearchParams();
     const toast = useRef<Toast>(null)
     const [isLoading, setLoading] = useState(false)
     const [isCancelDisabled, setCancelDisabled] = useState(false)
+    const [isReviewDisabled, setReviewDisabled] = useState(true)
 
     const [isOrderCanceled, setOrderCanceled] = useState(false)
     const [selectedItem, setSelectedItem] = useState<IOrderItem>()
     const [formReview, setFormReview] = useState<FormReview>({ productId: 0, content: 'Excellent', rate: 1 })
+    const [order, setOrder] = useState<IGetOrderHistory>()
     const [orderItems, setOrderItems] = useState<IOrderItem[]>([]);
     const [price, setPrice] = useState(0);
     const [discount, setDiscount] = useState(0);
     const [total, setTotal] = useState(0);
     const [orderNumber, setOrderNumber] = useState("");
+    const [activeIndex, setActiveIndex] = useState<number>(0)
 
     useEffect(() => {
-        const getOrderItems = async() => {
-            const orderId = localStorage.getItem("orderId");
-            if(orderId){
-                const response:any = await api.getOrderItem(orderId);
-                if(response?.data) {
-                    setOrderItems(response.data);
+        const getOrderItems = async () => {
+            const orderId = localStorage.getItem("orderId") || searchParams.get("id");
+            if (orderId) {
+                setOrderNumber(orderId);
+                const orderResponse: any = await api.getOrder(orderId);
+                if (orderResponse?.data) {
+                    setOrder(orderResponse.data)
                 }
-            }   
+
+                const orderItemResponse: any = await api.getOrderItem(orderId);
+                if (orderItemResponse?.data) {
+                    setOrderItems(orderItemResponse.data);
+                }
+            }
         }
         getOrderItems();
-    }, []);
+    }, [searchParams]);
 
     useEffect(() => {
         setPrice(orderItems.reduce((acc, item) => acc + item.price * item.quantity, 0));
         setDiscount(12);
+
         const calculatedTotal = price - discount;
         setTotal(calculatedTotal);
-        console.log(orderItems.length);
-        const ordNum = localStorage.getItem("orderId") || "0";
-        setOrderNumber(ordNum);
-    }, [orderItems, price])
+
+        const index = process.findIndex(step => step.label === order?.status)
+        setActiveIndex(index)
+        if (index > 1) {
+            setCancelDisabled(true)
+        }
+        if (index == 4) {
+            setReviewDisabled(false)
+        }
+
+        const isOrderCancel = order?.status === 'canceled' ? true : false
+        setOrderCanceled(isOrderCancel)
+        if (isOrderCancel == true) {
+            setCancelDisabled(true)
+        }
+
+    }, [discount, orderItems, price])
 
     const acceptCancelOrder = () => {
         setLoading(true)
@@ -83,18 +107,11 @@ const OrderSummary: React.FC = () => {
     }
 
     const process: MenuItem[] = [
-        {
-            label: 'Ordered'
-        },
-        {
-            label: 'Packaging'
-        },
-        {
-            label: 'Shipping'
-        },
-        {
-            label: 'Delivered'
-        }
+        { label: 'place order' },
+        { label: 'confirmed' },
+        { label: 'packaging' },
+        { label: 'shipping' },
+        { label: 'delivered' }
     ]
 
     const canceledStep: MenuItem[] = [
@@ -157,21 +174,28 @@ const OrderSummary: React.FC = () => {
             <div className="surface-section px-4 py-8 md:px-6 lg:px-8">
                 <Toast ref={toast} position='top-right' />
                 <span className="text-700 text-xl">Thanks!</span>
-                <div className="text-900 font-bold text-4xl my-2">
-                    Successful Place Order 🚀
-                </div>
-                <p className="text-700 text-xl mt-0 mb-4 p-0">
+                {!isOrderCanceled ? (
+                    <div className="text-900 font-bold text-4xl my-2">
+                        Successful Place Order 🚀
+                    </div>) : (
+                    <div className="text-900 font-bold text-4xl my-2">
+                        Order Canceled
+                    </div>)
+                }
+                {!isOrderCanceled && <p className="text-700 text-xl mt-0 mb-4 p-0">
                     Wait for order confirmation.
-                </p>
+                </p>}
                 <div
                     style={{
                         height: '3px',
                         background: 'linear-gradient(90deg, #2196F3 0%, rgba(33, 150, 243, 0) 50%)',
                     }}
                 />
-                <p className='font-bold'>Order Processing</p>
+                {!isOrderCanceled && <p className='font-bold'>Order Processing</p>}
                 {!isOrderCanceled ? (
-                    <Steps readOnly model={process} activeIndex={0} />
+                    activeIndex >= 0 ? (
+                        <Steps readOnly model={process} activeIndex={activeIndex} />
+                    ) : null
                 ) : (
                     <Steps readOnly model={canceledStep} activeIndex={0} />
                 )}
@@ -216,7 +240,7 @@ const OrderSummary: React.FC = () => {
                                 </div>
                                 <Button
                                     className='ml-auto'
-                                    visible={!isOrderCanceled}
+                                    visible={!isOrderCanceled && !isReviewDisabled}
                                     outlined
                                     label="Review"
                                     icon="pi pi-star"
