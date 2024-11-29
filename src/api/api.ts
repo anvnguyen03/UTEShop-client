@@ -1,4 +1,4 @@
-import { IAccount, IBackendRes, ICartItem, ICoupon, IGetAccount, IGetAddress, IGetCart, IGetCategory, IGetOneProduct, IGetOrderHistory, IGetProduct, IOrderItem } from '../types/backend';
+import { IAccount, IBackendRes, ICartItem, ICoupon, IGetAccount, IGetAddress, IGetCart, IGetCategory, IGetOneProduct, IGetOrderDetails, IGetOrderHistory, IGetProduct, IOrderItem } from '../types/backend';
 import axios from './axios-customize';
 
 export const callLogin = (email: string, password: string) => {
@@ -136,4 +136,8 @@ export const getUsersStatistics = async (currentYear: number) => {
 
 export const getGeneralStatistics = async () => {
     return axios.get<IBackendRes<any>>('/api/v1/admin/general-statistics')
+}
+
+export const getOrderDetails = async (orderId: string) => {
+    return axios.get<IBackendRes<IGetOrderDetails>>(`/api/v1/admin/orders/${orderId}`)
 }

@@ -11,7 +11,6 @@ import ForgotPassword from './pages/ResetPassword/sentotp'
 import VerifyOTP from './pages/ResetPassword/verifyotp'
 import ResetPassword from './pages/ResetPassword/resetpassword'
 import { SearchProvider } from './pages/shop/search'
-import ProtectedRoute from './configs/ProtectedRoute'
 import CartPage from './pages/Cart/cart'
 import CheckoutForm from './pages/Checkout/checkout'
 import OrderSummary from './pages/OrderSummary/ordersummary'
@@ -29,6 +28,7 @@ import AdminAddProduct from './pages/Admin/product/admin-addproduct'
 import useWebSocket from './hooks/useWebSocket'
 import { Toast } from 'primereact/toast';
 import EditProductPage from './pages/Admin/product/admin-editproduct'
+import AdminOrderDetails from './pages/Admin/order/orderDetails'
 
 function App() {
   const dispatch = useAppDispatch();
@@ -96,6 +96,7 @@ function App() {
             <Route path="user" element={<AdminUser />} />
             <Route path="revenue" element={<AdminRevenue />} />
             <Route path="order" element={<AdminOrder />} />
+            <Route path="order/:orderId" element={<AdminOrderDetails />} />
             <Route path="coupon" element={<AdminCoupon />} />
           </Route>
         </Routes>

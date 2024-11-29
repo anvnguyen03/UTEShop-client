@@ -20,6 +20,7 @@ import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown'
 import { SplitButton } from 'primereact/splitbutton'
 import { MenuItem } from 'primereact/menuitem'
 import { Toast } from 'primereact/toast'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const defaultFilters: DataTableFilterMeta = {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -44,6 +45,7 @@ const defaultFilters: DataTableFilterMeta = {
 const AdminOrder: React.FC = () => {
 
     const toast = useRef<Toast>(null);
+    const navigate = useNavigate()
     const [loading, setLoading] = useState<boolean>(true)
     const [orders, setOrders] = useState<IGetOrderHistory[]>([])
     const [newOrders, setNewOrders] = useState<IGetOrderHistory[]>([])
@@ -191,13 +193,17 @@ const AdminOrder: React.FC = () => {
                 {(rowData.status !== 'canceled') && (rowData.status !== 'delivered') ? (
                     <SplitButton
                         icon="pi pi-plus"
-                        onClick={() => console.log('Clicked order: ' + rowData.orderNumber)}
+                        onClick={() => onSplitButtonClick(rowData.orderNumber)}
                         model={createMenuItems(rowData.orderNumber)} raised rounded size='small'
                     />) : (null)
                 }
             </React.Fragment>
         );
     };
+
+    const onSplitButtonClick = (orderId: string) => {
+        navigate(`/admin/order/${orderId}`)
+    }
 
     const changeOrderStatus = async (orderNumber: string, status: string) => {
         const response: any = await api.changeOrderStatus(orderNumber, status)

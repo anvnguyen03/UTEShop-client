@@ -100,7 +100,7 @@ const AdminUser: React.FC = () => {
         try {
             setVisible(false);
             setFormData(null);
-            const response: any = await api.callFetchAllUsers();
+            const response: any = await api.updateUser(formData);
             if (response?.data) {
                 setUsers([response?.data]); 
             } else {
