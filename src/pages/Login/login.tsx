@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { useState, ChangeEvent, FormEvent, useEffect, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { FloatLabel } from "primereact/floatlabel";
 import { Password } from 'primereact/password';
@@ -11,6 +11,7 @@ import { callLogin } from "../../api/api";
 import { setUserLoginInfo } from '../../redux/slice/accountSlide';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { IAccount, IBackendRes } from "../../types/backend";
+import { Toast } from "primereact/toast";
 
 interface FormData {
     username: string;
@@ -18,6 +19,10 @@ interface FormData {
 }
 
 const LoginPage: React.FC = () => {
+    const toast = useRef<Toast>(null);
+    const showError = (content: string, summary: string) => {
+        toast.current?.show({severity:'error', summary: summary, detail: content, life: 3000});
+    }
     const [form, setForm] = useState<FormData>({ username: "", password: "" });
     const [submitted, setSubmitted] = useState(false);
     const [emailError, setEmailError] = useState(false);
@@ -71,6 +76,10 @@ const LoginPage: React.FC = () => {
         setSubmitted(false);
 
         if (res) {
+            if(res.statusCode >= 400) {
+                console.log("hello");
+                showError(res.message, res.error);
+            }
             if (res.data) {
                 localStorage.setItem('access_token', res.data.accessToken);
                 localStorage.setItem('email', res.data.user.email);
@@ -157,6 +166,7 @@ const LoginPage: React.FC = () => {
                 </div>
 
             </form>
+            <Toast ref={toast} />
         </div>
 
     )
