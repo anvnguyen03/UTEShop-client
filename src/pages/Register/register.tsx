@@ -1,6 +1,6 @@
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext"
-import React from "react";
+import React, { useRef } from "react";
 import '/node_modules/primeflex/primeflex.css'
 import 'primeicons/primeicons.css'
 import appLogo from '../../assets/logo_red.png'
@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { FloatLabel } from "primereact/floatlabel";
 import { callRegister } from "../../api/api";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { Toast } from 'primereact/toast';
 
 interface FormData {
     fullName: string
@@ -17,6 +18,12 @@ interface FormData {
 }
 
 const RegisterPage: React.FC = () => {
+
+    const toast = useRef<Toast>(null);
+    const showError = (content: string, summary: string) => {
+        toast.current?.show({severity:'error', summary: summary, detail: content, life: 3000});
+    }
+
     const { register, handleSubmit, formState: { errors }, watch } = useForm<FormData>({
          mode: "onChange"
     });
@@ -24,9 +31,12 @@ const RegisterPage: React.FC = () => {
     const password = watch('password', '');
 
     const onSubmit: SubmitHandler<FormData> = async (data) => {
-        const res = await callRegister(data.fullName, data.email, data.password)
+        const res: any = await callRegister(data.fullName, data.email, data.password)
         if (res) {
-            console.log(res)
+            if(res.statusCode >= 400) {
+                console.log("Hello" + res.message);
+                showError(res.message, res.error);
+            }
         } else {
             console.log('Lỗi rồi kìa')
         }
@@ -112,6 +122,7 @@ const RegisterPage: React.FC = () => {
                     <Button label="Đăng ký" icon="pi pi-send" type="submit" className="field" />
                 </div>
             </form>
+            <Toast ref={toast} />
         </div>
     )
 }
